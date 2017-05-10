@@ -14,5 +14,6 @@ public class MainMenuActivity extends AppCompatActivity {
         System.out.println("FUCK YOUUUUUUUUU!!!!!!");
         System.out.println("AGAIIIIIIINNNNNN!!!11!");
         System.out.println("GIT STIIIIIIINKT11!!!!");
+        System.out.println("Sven ist nicht bei der 9gag army");
     }
 }
