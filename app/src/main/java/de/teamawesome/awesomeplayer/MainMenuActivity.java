@@ -13,6 +13,6 @@ public class MainMenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_menu);
         System.out.println("FUCK YOUUUUUUUUU!!!!!!");
         System.out.println("AGAIIIIIIINNNNNN!!!!!!");
-        System.out.println("GIT STIIIIIIINKT!!!!!!");
+        System.out.println("GIT STIIIIIIINKT11!!!!");
     }
 }
