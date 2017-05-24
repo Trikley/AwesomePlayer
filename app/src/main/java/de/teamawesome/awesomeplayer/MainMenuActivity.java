@@ -1,5 +1,6 @@
 package de.teamawesome.awesomeplayer;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -11,9 +12,5 @@ public class MainMenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-        System.out.println("FUCK YOUUUUUUUUU!!!!!!");
-        System.out.println("AGAIIIIIIINNNNNN!!!11!");
-        System.out.println("GIT STIIIIIIINKT11!!!!");
-        System.out.println("Sven ist nicht bei der 9gag army");
     }
 }
