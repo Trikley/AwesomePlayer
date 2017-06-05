@@ -1,6 +1,6 @@
-package de.teamawesome.awesomeplayer;
+package de.teamawesome.awesomeplayer.listFragments;
 
-import static de.teamawesome.awesomeplayer.ListUtils.*;
+import static de.teamawesome.awesomeplayer.listFragments.ListUtils.*;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +28,23 @@ public enum ListBundles {
         {SELECTION_ARGS, null}
     }),
 
+    MEDIA_FROM_ALBUM_BUNDLE ( new Object[][]{
+            {URI, MEDIA_URI},
+            {FROM, MEDIA_FROM},
+            {PROJECTION, null},
+            {SELECTION_STRING, MEDIA_FROM_ALBUM_SELECTION_STRING},
+            {SELECTION_ARGS, null} //Should be set to an array containing the clicked album's is
+    }),
+
+    MEDIA_FROM_PLAYLIST_BUNDLE ( new Object[][]{
+            {URI, null}, //Should be set to the correct uri from the clicked playlist's id
+            {FROM, MEDIA_FROM},
+            {PROJECTION, null},
+            {SELECTION_STRING, null},
+            {SELECTION_ARGS, null}
+    }),
+
+
     PLAYLIST_BUNDLE ( new Object[][]{
         {URI, PLAYLISTS_URI},
         {FROM, PLAYLISTS_FROM},
@@ -35,8 +52,6 @@ public enum ListBundles {
         {SELECTION_STRING, null},
         {SELECTION_ARGS, null}
     });
-
-
 
     private final Bundle associatedBundle = new Bundle();
 

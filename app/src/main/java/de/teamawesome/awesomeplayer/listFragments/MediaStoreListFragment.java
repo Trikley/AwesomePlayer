@@ -1,6 +1,9 @@
-package de.teamawesome.awesomeplayer;
+package de.teamawesome.awesomeplayer.listFragments;
 
-import static de.teamawesome.awesomeplayer.ListUtils.*;
+import static de.teamawesome.awesomeplayer.listFragments.ListUtils.*;
+
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
@@ -8,11 +11,10 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.view.View;
-import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+
+import de.teamawesome.awesomeplayer.R;
 
 /**
  * Created by sven on 5/24/17.
@@ -36,7 +38,6 @@ public class MediaStoreListFragment extends ListFragment implements LoaderManage
         projection = args.getStringArray(PROJECTION);
         selectionString= args.getString(SELECTION_STRING);
         selectionArguments = args.getStringArray(SELECTION_ARGS);
-
     }
 
     @Override
@@ -50,7 +51,6 @@ public class MediaStoreListFragment extends ListFragment implements LoaderManage
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getActivity(), cursorLoaderUri,null,selectionString,selectionArguments,null);
-
     }
 
     @Override
@@ -63,15 +63,11 @@ public class MediaStoreListFragment extends ListFragment implements LoaderManage
         sca.swapCursor(null);
     }
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-//        super.onListItemClick(l, v, position, id);
-        cursorLoaderUri = MediaStore.Audio.Playlists.Members.getContentUri("external", id);
-//        from = new String[]{MediaStore.Audio.Albums..TITLE};
-//        sca = new SimpleCursorAdapter(getActivity(),android.R.layout.simple_list_item_1,null,from,to, 0);
-//        getLoaderManager().initLoader(0, null, this);
-//        setListAdapter(sca);
-
-
+    protected void replaceListFragment(Fragment newFragment, Bundle arguments){
+        newFragment.setArguments(arguments);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.MainContainer, newFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }
