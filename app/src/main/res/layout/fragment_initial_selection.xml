@@ -1,0 +1,33 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="de.teamawesome.awesomeplayer.InitialSelectionFragment">
+
+    <Button
+        android:id="@+id/Button_All"
+        android:text="@string/Button_All_Text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        />
+
+    <Button
+        android:id="@+id/Button_Albums"
+        android:text="@string/Button_Albums_Text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Button_All"
+        android:layout_margin="10dp"
+        />
+
+    <Button
+        android:id="@+id/Button_Playlists"
+        android:text="@string/Button_Playlists_Text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Button_Albums"
+        android:layout_margin="10dp"
+        />
+
+</RelativeLayout>
