@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.SimpleCursorAdapter;
 
+import de.teamawesome.awesomeplayer.FragmentListener;
 import de.teamawesome.awesomeplayer.R;
 
 /**
@@ -22,6 +24,7 @@ import de.teamawesome.awesomeplayer.R;
 
 public class MediaStoreListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     SimpleCursorAdapter sca;
+    FragmentListener fListener;
 
     private Uri cursorLoaderUri = ALBUMS_URI;
     private String[] from = ALBUMS_FROM;
@@ -63,11 +66,20 @@ public class MediaStoreListFragment extends ListFragment implements LoaderManage
         sca.swapCursor(null);
     }
 
-    protected void replaceListFragment(Fragment newFragment, Bundle arguments){
-        newFragment.setArguments(arguments);
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.MainContainer, newFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof FragmentListener) {
+            fListener = (FragmentListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement FragmentListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        fListener = null;
     }
 }

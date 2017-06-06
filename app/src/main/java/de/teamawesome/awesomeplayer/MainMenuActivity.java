@@ -18,21 +18,20 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
         setContentView(R.layout.activity_main_menu);
         // Create new fragment and transaction
         Fragment initialFragment = new InitialSelectionFragment();
-        initialFragment.setArguments(ListBundles.PLAYLIST_BUNDLE.get());
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack if needed
-        transaction.replace(R.id.MainContainer, initialFragment);
-        transaction.addToBackStack(null);
-
-        // Commit the transaction
-        transaction.commit();
+        replaceFragment(initialFragment, null);
     }
 
     @Override
     public void onFragmentInteraction(Bundle arguments, Object caller) {
+        if(caller instanceof MediaListFragment){
 
+        }
+        if(caller instanceof AlbumsListFragment){
+            replaceFragment(new MediaListFragment(), arguments);
+        }
+        if(caller instanceof PlaylistsListFragment){
+            replaceFragment(new MediaListFragment(), arguments);
+        }
     }
 
     @Override
@@ -54,9 +53,12 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
 
     protected void replaceFragment(Fragment newFragment, Bundle arguments){
         newFragment.setArguments(arguments);
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack if needed
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.MainContainer, newFragment);
         transaction.addToBackStack(null);
+        // Commit transaction
         transaction.commit();
     }
 }
