@@ -1,24 +1,26 @@
-package de.teamawesome.awesomeplayer;
+package de.teamawesome.awesomeplayer.fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import de.teamawesome.awesomeplayer.listFragments.ListBundles;
-import de.teamawesome.awesomeplayer.listFragments.MediaListFragment;
+import de.teamawesome.awesomeplayer.R;
 
+/**
+ * A simple Fragment showing Buttons to display All songs, albums or playlists.
+ */
 public class InitialSelectionFragment extends Fragment {
+    /**
+     * The attached {@link FragmentListener}. Should be {@link de.teamawesome.awesomeplayer.MainMenuActivity}.
+     */
     private FragmentListener fListener;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
+    /**
+     * Used to set the Fragment's Button's Listeners.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -52,6 +54,9 @@ public class InitialSelectionFragment extends Fragment {
         return view;
     }
 
+    /**
+     * onAttach and onDetach are used to handle the assignment of 'fragmentListener'
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
