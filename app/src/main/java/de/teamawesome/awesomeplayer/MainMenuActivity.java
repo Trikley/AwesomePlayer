@@ -5,12 +5,14 @@ import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import de.teamawesome.awesomeplayer.listFragments.AlbumsListFragment;
-import de.teamawesome.awesomeplayer.listFragments.ListBundles;
-import de.teamawesome.awesomeplayer.listFragments.MediaListFragment;
-import de.teamawesome.awesomeplayer.listFragments.PlaylistsListFragment;
+import de.teamawesome.awesomeplayer.fragments.FragmentListener;
+import de.teamawesome.awesomeplayer.fragments.InitialSelectionFragment;
+import de.teamawesome.awesomeplayer.fragments.listFragments.AlbumsListFragment;
+import de.teamawesome.awesomeplayer.fragments.listFragments.ListBundles;
+import de.teamawesome.awesomeplayer.fragments.listFragments.MediaListFragment;
+import de.teamawesome.awesomeplayer.fragments.listFragments.PlaylistsListFragment;
 
-public class MainMenuActivity extends AppCompatActivity implements FragmentListener{
+public class MainMenuActivity extends AppCompatActivity implements FragmentListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +23,14 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
         replaceFragment(initialFragment, null);
     }
 
+    /**
+     * Handles interactions with the currently loaded Fragments.
+     * Interactions should only result in layout changes (e.g. replacing a CursorListFragment).
+     * Data handling like setting up a the arguments Bundle for the new Fragment or triggering media
+     * playback should be done in the Fragment's implementation.
+     * @param arguments This Bundle can be hold additional interaction information.
+     * @param caller Should always be referencing the calling object.
+     */
     @Override
     public void onFragmentInteraction(Bundle arguments, Object caller) {
         if(caller instanceof MediaListFragment){
@@ -34,6 +44,13 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
         }
     }
 
+    /**
+     * Handles interactions with hard-coded Buttons.
+     * Interactions should only result in layout changes (e.g. replacing a CursorListFragment).
+     * Data handling like setting up a the arguments Bundle for the new Fragment or triggering media
+     * playback should be done in the Fragment's implementation.
+     * @param id The clicked button's id.
+     */
     @Override
     public void onFragmentButtonClick(int id) {
         switch(id){

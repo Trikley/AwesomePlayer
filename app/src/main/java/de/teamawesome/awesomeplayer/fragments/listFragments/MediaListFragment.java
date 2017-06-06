@@ -1,4 +1,4 @@
-package de.teamawesome.awesomeplayer.listFragments;
+package de.teamawesome.awesomeplayer.fragments.listFragments;
 
 /**
  * A {@link CursorListFragment} used to display songs.

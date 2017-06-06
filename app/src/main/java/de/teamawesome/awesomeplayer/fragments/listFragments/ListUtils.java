@@ -1,4 +1,4 @@
-package de.teamawesome.awesomeplayer.listFragments;
+package de.teamawesome.awesomeplayer.fragments.listFragments;
 
 import android.net.Uri;
 import android.provider.MediaStore;

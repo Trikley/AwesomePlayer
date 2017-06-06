@@ -1,11 +1,11 @@
-package de.teamawesome.awesomeplayer.listFragments;
+package de.teamawesome.awesomeplayer.fragments.listFragments;
 
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ListView;
 
-import static de.teamawesome.awesomeplayer.listFragments.ListUtils.URI;
+import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.URI;
 
 /**
  * A {@link CursorListFragment} used to display playlists.

@@ -1,6 +1,6 @@
-package de.teamawesome.awesomeplayer.listFragments;
+package de.teamawesome.awesomeplayer.fragments.listFragments;
 
-import static de.teamawesome.awesomeplayer.listFragments.ListUtils.*;
+import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.*;
 
 import android.net.Uri;
 import android.os.Bundle;

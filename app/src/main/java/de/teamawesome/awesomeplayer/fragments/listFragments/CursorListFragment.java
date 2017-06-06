@@ -1,6 +1,6 @@
-package de.teamawesome.awesomeplayer.listFragments;
+package de.teamawesome.awesomeplayer.fragments.listFragments;
 
-import static de.teamawesome.awesomeplayer.listFragments.ListUtils.*;
+import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.*;
 
 import android.app.ListFragment;
 import android.app.LoaderManager;
@@ -13,7 +13,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.SimpleCursorAdapter;
 
-import de.teamawesome.awesomeplayer.FragmentListener;
+import de.teamawesome.awesomeplayer.fragments.FragmentListener;
 
 /**
  * Simple {@link ListFragment} which holds the contents of a cursor.
