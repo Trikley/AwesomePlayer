@@ -1,5 +1,6 @@
 package de.teamawesome.awesomeplayer.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -55,15 +56,17 @@ public class InitialSelectionFragment extends Fragment {
     }
 
     /**
-     * onAttach and onDetach are used to handle the assignment of 'fragmentListener'
+     * onAttach and onDetach are used to handle the assignment of 'fragmentListener'.
+     * ignore the deprecated warning, since the target version of android is 4.1 we cannot
+     * use the replacement method.
      */
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof FragmentListener) {
-            fListener = (FragmentListener) context;
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof FragmentListener) {
+            fListener = (FragmentListener) activity;
         } else {
-            throw new RuntimeException(context.toString()
+            throw new RuntimeException(activity.toString()
                     + " must implement FragmentListener");
         }
     }

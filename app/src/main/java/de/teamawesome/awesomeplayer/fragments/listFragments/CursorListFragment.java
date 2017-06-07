@@ -2,6 +2,7 @@ package de.teamawesome.awesomeplayer.fragments.listFragments;
 
 import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.*;
 
+import android.app.Activity;
 import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.Context;
@@ -100,15 +101,17 @@ public class CursorListFragment extends ListFragment implements LoaderManager.Lo
     }
 
     /**
-     * onAttach and onDetach are used to handle the assignment of 'fragmentListener'
+     * onAttach and onDetach are used to handle the assignment of 'fragmentListener'.
+     * ignore the deprecated warning, since the target version of android is 4.1 we cannot
+     * use the replacement method.
      */
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof FragmentListener) {
-            fragmentListener = (FragmentListener) context;
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof FragmentListener) {
+            fragmentListener = (FragmentListener) activity;
         } else {
-            throw new RuntimeException(context.toString()
+            throw new RuntimeException(activity.toString()
                     + " must implement FragmentListener");
         }
     }
