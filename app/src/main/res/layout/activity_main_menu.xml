@@ -4,12 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.teamawesome.awesomeplayer.MainMenuActivity">
-
-    <fragment
-        android:id="@+id/fragment1"
-        android:name="de.teamawesome.awesomeplayer.Testfragment"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent" />
+    tools:context="de.teamawesome.awesomeplayer.MainMenuActivity"
+    android:id="@+id/MainContainer">
 
 </android.support.constraint.ConstraintLayout>
