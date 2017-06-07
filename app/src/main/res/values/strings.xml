@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">AwesomePlayer</string>
+
     <string name="Button_All_Text">ALL</string>
     <string name="Button_Albums_Text">ALBUMS</string>
     <string name="Button_Playlists_Text">PLAYLISTS</string>
+  
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
