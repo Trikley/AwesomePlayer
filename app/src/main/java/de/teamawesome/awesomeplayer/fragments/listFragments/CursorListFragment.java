@@ -11,6 +11,14 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.MotionEventCompat;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 
 import de.teamawesome.awesomeplayer.fragments.FragmentListener;
@@ -18,7 +26,7 @@ import de.teamawesome.awesomeplayer.fragments.FragmentListener;
 /**
  * Simple {@link ListFragment} which holds the contents of a cursor.
  */
-public class CursorListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class CursorListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     /**
      * This {@link SimpleCursorAdapter} is used to display the cursor's search results.
      */
@@ -28,6 +36,12 @@ public class CursorListFragment extends ListFragment implements LoaderManager.Lo
      * The attached {@link FragmentListener}. Should be {@link de.teamawesome.awesomeplayer.MainMenuActivity}.
      */
     protected FragmentListener fragmentListener;
+
+    /**
+     * The touch listener which is used to handle touch events such as Gestures.
+     * The definition of this listener belongs to the child classes.
+     */
+    View.OnTouchListener onTouchListener = null;
 
     /**
      * These attributes are representing the cursors search query.
@@ -84,6 +98,16 @@ public class CursorListFragment extends ListFragment implements LoaderManager.Lo
         setListAdapter(simpleCursorAdapter);
     }
 
+    /**
+     * Needed to set the onTouchListener.
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        view.setOnTouchListener(new CursorListOnTouchListener(this));
+        return view;
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getActivity(), cursorLoaderUri,projection,selectionString,selectionArguments,sortOrder);
@@ -117,5 +141,26 @@ public class CursorListFragment extends ListFragment implements LoaderManager.Lo
     public void onDetach() {
         super.onDetach();
         fragmentListener = null;
+    }
+
+    abstract protected boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY);
+
+    protected class CursorListOnTouchListener extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener, GestureDetector.OnGestureListener{
+        private GestureDetector gd = new GestureDetector(getActivity(),this);
+        private CursorListFragment attachedListFragment;
+
+        CursorListOnTouchListener(CursorListFragment _attachCursorListFragment){
+            attachedListFragment = _attachCursorListFragment;
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            return gd.onTouchEvent(event);
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            return attachedListFragment.onFling(e1, e2, velocityX, velocityY) || super.onFling(e1, e2, velocityX, velocityY);
+        }
     }
 }

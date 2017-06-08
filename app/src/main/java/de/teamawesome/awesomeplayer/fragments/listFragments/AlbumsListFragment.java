@@ -3,6 +3,7 @@ package de.teamawesome.awesomeplayer.fragments.listFragments;
 import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.*;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 
@@ -20,5 +21,10 @@ public class AlbumsListFragment extends de.teamawesome.awesomeplayer.fragments.l
         Bundle arguments = de.teamawesome.awesomeplayer.fragments.listFragments.ListBundles.MEDIA_FROM_ALBUM_BUNDLE.get();
         arguments.putStringArray(SELECTION_ARGS, new String[]{"" + id});
         fragmentListener.onFragmentInteraction(arguments, this);
+    }
+
+    @Override
+    protected boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return false;
     }
 }

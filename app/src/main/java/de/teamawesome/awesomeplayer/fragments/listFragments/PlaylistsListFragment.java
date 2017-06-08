@@ -2,6 +2,7 @@ package de.teamawesome.awesomeplayer.fragments.listFragments;
 
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 
@@ -23,4 +24,8 @@ public class PlaylistsListFragment extends CursorListFragment {
         fragmentListener.onFragmentInteraction(arguments, this);
     }
 
+    @Override
+    protected boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return false;
+    }
 }
