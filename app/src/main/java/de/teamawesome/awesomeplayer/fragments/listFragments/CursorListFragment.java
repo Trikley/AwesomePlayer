@@ -211,7 +211,7 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
          */
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            fragmentListener.onFragmentDoubleTap(this);
+            fragmentListener.onFragmentDoubleTap(attachedListFragment);
             return true;
         }
     }

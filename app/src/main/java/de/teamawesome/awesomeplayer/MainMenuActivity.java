@@ -4,6 +4,9 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
 
 import de.teamawesome.awesomeplayer.fragments.FragmentListener;
 import de.teamawesome.awesomeplayer.fragments.GestureCanvasFragment;
@@ -14,14 +17,18 @@ import de.teamawesome.awesomeplayer.fragments.listFragments.MediaListFragment;
 import de.teamawesome.awesomeplayer.fragments.listFragments.PlaylistsListFragment;
 
 public class MainMenuActivity extends AppCompatActivity implements FragmentListener {
+    private static final String MAIN_FRAGMENT_TAG = "MAINFRAGMENT";
+    private static final String OVERLAY_FRAGMENT_TAG = "OVERLAYFRAGMENT";
+    private GestureDetector gd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        gd = new GestureDetector(this,new GestureCanvasOnTouchListener(this));
         setContentView(R.layout.activity_main_menu);
         // Create new fragment and transaction
         Fragment initialFragment = new InitialSelectionFragment();
-        replaceFragment(initialFragment, null);
+        replaceMainFragment(initialFragment, null);
     }
 
     /**
@@ -38,10 +45,10 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
 
         }
         if(caller instanceof AlbumsListFragment){
-            replaceFragment(new MediaListFragment(), arguments);
+            replaceMainFragment(new MediaListFragment(), arguments);
         }
         if(caller instanceof PlaylistsListFragment){
-            replaceFragment(new MediaListFragment(), arguments);
+            replaceMainFragment(new MediaListFragment(), arguments);
         }
     }
 
@@ -56,13 +63,13 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
     public void onFragmentButtonClick(int id) {
         switch(id){
             case R.id.Button_All:
-                replaceFragment(new MediaListFragment(), ListBundles.MEDIA_BUNDLE.get());
+                replaceMainFragment(new MediaListFragment(), ListBundles.MEDIA_BUNDLE.get());
                 break;
             case R.id.Button_Albums:
-                replaceFragment(new AlbumsListFragment(), ListBundles.ALBUM_BUNDLE.get());
+                replaceMainFragment(new AlbumsListFragment(), ListBundles.ALBUM_BUNDLE.get());
                 break;
             case R.id.Button_Playlists:
-                replaceFragment(new PlaylistsListFragment(), ListBundles.PLAYLIST_BUNDLE.get());
+                replaceMainFragment(new PlaylistsListFragment(), ListBundles.PLAYLIST_BUNDLE.get());
                 break;
             default: break;
         }
@@ -70,28 +77,57 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
 
     @Override
     public void onFragmentDoubleTap(Object caller) {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
         if(caller instanceof GestureCanvasFragment){
-
+            transaction.detach(getFragmentManager().findFragmentByTag(OVERLAY_FRAGMENT_TAG));
+        } else {
+            Fragment newFragment = new GestureCanvasFragment();
+            transaction.add(R.id.MainContainer, newFragment, OVERLAY_FRAGMENT_TAG);
         }
-        Fragment newFragment = new GestureCanvasFragment();
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+
+    protected void replaceMainFragment(Fragment newFragment, Bundle arguments){
+        newFragment.setArguments(arguments);
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack if needed
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.add(R.id.MainContainer, newFragment);
+        transaction.replace(R.id.MainContainer, newFragment,MAIN_FRAGMENT_TAG);
         transaction.addToBackStack(null);
         // Commit transaction
         transaction.commit();
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return gd.onTouchEvent(event) || super.onTouchEvent(event);
+    }
 
-    protected void replaceFragment(Fragment newFragment, Bundle arguments){
-        newFragment.setArguments(arguments);
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack if needed
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.MainContainer, newFragment);
-        transaction.addToBackStack(null);
-        // Commit transaction
-        transaction.commit();
+    /**
+     * This class is used to handle the Gesture recognition.
+     */
+    private class GestureCanvasOnTouchListener extends GestureDetector.SimpleOnGestureListener {
+
+        // The CursorListFragment used to handle onFling events
+        private MainMenuActivity attachedActivity;
+        // The GestureDetector needed to handle the gesture recognition;
+
+
+        GestureCanvasOnTouchListener(MainMenuActivity _attachedActivity){
+            super();
+            attachedActivity = _attachedActivity;
+        }
+
+        /**
+         * Catches all double taps and triggers the fragment transition on the activity;
+         */
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            attachedActivity.onFragmentDoubleTap(attachedActivity);
+            return true;
+        }
+
     }
 }

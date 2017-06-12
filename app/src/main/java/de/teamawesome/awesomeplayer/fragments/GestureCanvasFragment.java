@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.view.GestureDetectorCompat;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,7 +24,9 @@ public class GestureCanvasFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_gesture_canvas, container, false);
+        View view = inflater.inflate(R.layout.fragment_gesture_canvas, container, false);
+        view.setOnTouchListener(new GestureCanvasOnTouchListener(this));
+        return view;
     }
 
     /**
@@ -49,21 +52,21 @@ public class GestureCanvasFragment extends Fragment {
     /**
      * This class is used to handle the Gesture recognition.
      */
-    private class CursorListOnTouchListener extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener{
+    private class GestureCanvasOnTouchListener extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener{
 
         // The CursorListFragment used to handle onFling events
-        private CursorListFragment attachedListFragment;
+        private GestureCanvasFragment attachedListFragment;
         // The GestureDetector needed to handle the gesture recognition;
         private GestureDetector gd = new GestureDetector(getActivity(),this);
 
-        CursorListOnTouchListener(CursorListFragment _attachCursorListFragment){
+        GestureCanvasOnTouchListener(GestureCanvasFragment _attachCursorListFragment){
             super();
             attachedListFragment = _attachCursorListFragment;
         }
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            return gd.onTouchEvent(event);
+            return gd.onTouchEvent(event) || true;
         }
 
         /**
@@ -71,9 +74,10 @@ public class GestureCanvasFragment extends Fragment {
          */
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            fragmentListener.onFragmentDoubleTap(this);
+            fragmentListener.onFragmentDoubleTap(attachedListFragment);
             return true;
         }
+
     }
 
 }

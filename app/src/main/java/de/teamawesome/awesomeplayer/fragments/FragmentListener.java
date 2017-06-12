@@ -24,7 +24,7 @@ public interface FragmentListener {
 
     /**
      * Should be used to catch double tap events on the different fragments
-     * @param caller Should always be referencing the calling object.
+     * @param caller Should always be referencing the calling fragment.
      */
     public void onFragmentDoubleTap(Object caller);
 }
