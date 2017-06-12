@@ -205,6 +205,15 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             return Math.abs(distanceY/distanceX) < maxFlingAngleRatio || super.onScroll(e1, e2, distanceX, distanceY);
         }
+
+        /**
+         * Catches all double taps and triggers the fragment transition on the activity;
+         */
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            fragmentListener.onFragmentDoubleTap(this);
+            return true;
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import de.teamawesome.awesomeplayer.fragments.FragmentListener;
+import de.teamawesome.awesomeplayer.fragments.GestureCanvasFragment;
 import de.teamawesome.awesomeplayer.fragments.InitialSelectionFragment;
 import de.teamawesome.awesomeplayer.fragments.listFragments.AlbumsListFragment;
 import de.teamawesome.awesomeplayer.fragments.listFragments.ListBundles;
@@ -65,6 +66,21 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
                 break;
             default: break;
         }
+    }
+
+    @Override
+    public void onFragmentDoubleTap(Object caller) {
+        if(caller instanceof GestureCanvasFragment){
+
+        }
+        Fragment newFragment = new GestureCanvasFragment();
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack if needed
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.add(R.id.MainContainer, newFragment);
+        transaction.addToBackStack(null);
+        // Commit transaction
+        transaction.commit();
     }
 
 
