@@ -1,10 +1,8 @@
 package de.teamawesome.awesomeplayer.fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.v4.view.GestureDetectorCompat;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -12,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.teamawesome.awesomeplayer.R;
-import de.teamawesome.awesomeplayer.fragments.listFragments.CursorListFragment;
 
 /**
  * This {@link android.app.Fragment} represents the Gesture interface from Screen VI.
