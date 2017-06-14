@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -27,14 +26,14 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        doubleTapDetector = new GestureDetector(this,new GestureCanvasOnTouchListener(this));
+        doubleTapDetector = new GestureDetector(this,new TouchProcessor());
         setContentView(R.layout.activity_main_menu);
-        // Create new fragment and transaction
+        /* For the initial transaction the .replaceMainFragment method is not used because otherwise
+        the adding of the fragment would be revertible to a blank screen.*/
         Fragment initialFragment = new InitialSelectionFragment();
-        replaceMainFragment(initialFragment, null);
-        Button b = (Button) findViewById(R.id.TestButton);
-        b.setOnTouchListener(new SwipeButtonOnTouchListener(this));
-
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.add(R.id.MainContainer, initialFragment,MAIN_FRAGMENT_TAG);
+        transaction.commit();
     }
 
     /**
@@ -81,20 +80,6 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
         }
     }
 
-    @Override
-    public void onFragmentDoubleTap(Object caller) {
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        if(caller instanceof GestureCanvasFragment){
-            transaction.detach(getFragmentManager().findFragmentByTag(OVERLAY_FRAGMENT_TAG));
-        } else {
-            Fragment newFragment = new GestureCanvasFragment();
-            transaction.add(R.id.MainContainer, newFragment, OVERLAY_FRAGMENT_TAG);
-        }
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
-
     protected void replaceMainFragment(Fragment newFragment, Bundle arguments){
         newFragment.setArguments(arguments);
         // Replace whatever is in the fragment_container view with this fragment,
@@ -115,51 +100,29 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
     /**
      * This class is used to handle the Gesture recognition.
      */
-    private class GestureCanvasOnTouchListener extends GestureDetector.SimpleOnGestureListener {
-
-        // The CursorListFragment used to handle onFling events
-        private MainMenuActivity attachedActivity;
-        // The GestureDetector needed to handle the gesture recognition;
-
-
-        GestureCanvasOnTouchListener(MainMenuActivity _attachedActivity){
-            super();
-            attachedActivity = _attachedActivity;
-        }
-
+    private class TouchProcessor extends GestureDetector.SimpleOnGestureListener {
         /**
          * Catches all double taps and triggers the fragment transition on the activity;
          */
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            attachedActivity.onFragmentDoubleTap(attachedActivity);
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+            Fragment gestureCanvasOverlay = getFragmentManager().findFragmentByTag(OVERLAY_FRAGMENT_TAG);
+            if(gestureCanvasOverlay != null && gestureCanvasOverlay.isAdded()){
+                transaction.detach(gestureCanvasOverlay);
+            } else {
+                Fragment newFragment = new GestureCanvasFragment();
+                transaction.add(R.id.MainContainer, newFragment, OVERLAY_FRAGMENT_TAG);
+            }
+
+            transaction.addToBackStack(null);
+            transaction.commit();
+            Log.d("MainMenuActivity","onDoubleTap");
             return true;
         }
 
     }
 
-    private class SwipeButtonOnTouchListener extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener{
 
-        // The CursorListFragment used to handle onFling events
-        private MainMenuActivity attachedActivity;
-        // The GestureDetector needed to handle the gesture recognition;
-        private GestureDetector gd;
-
-        SwipeButtonOnTouchListener (MainMenuActivity _attachedActivity){
-            super();
-            attachedActivity = _attachedActivity;
-            gd = new GestureDetector(attachedActivity, this);
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            Log.d("FLING","FLING");
-            return super.onFling(e1, e2, velocityX, velocityY);
-        }
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            return gd.onTouchEvent(event) || true;
-        }
-    }
 }

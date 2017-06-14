@@ -3,7 +3,9 @@ package de.teamawesome.awesomeplayer.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,7 +18,7 @@ public class InitialSelectionFragment extends Fragment {
     /**
      * The attached {@link FragmentListener}. Should be {@link de.teamawesome.awesomeplayer.MainMenuActivity}.
      */
-    private FragmentListener fListener;
+    private FragmentListener fragmentListener;
 
     /**
      * Used to set the Fragment's Button's Listeners.
@@ -27,29 +29,16 @@ public class InitialSelectionFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_initial_selection, container, false);
 
+        View.OnClickListener customClickListener = new TouchProcessor();
+
         // Listener Button ALL
-        view.findViewById(R.id.Button_All).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fListener.onFragmentButtonClick(R.id.Button_All);
-            }
-        });
+        view.findViewById(R.id.Button_All).setOnClickListener(customClickListener);
 
         // Listener Button ALBUMS
-        view.findViewById(R.id.Button_Albums).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fListener.onFragmentButtonClick(R.id.Button_Albums);
-            }
-        });
+        view.findViewById(R.id.Button_Albums).setOnClickListener(customClickListener);
 
         // Listener Button PLAYLISTS
-        view.findViewById(R.id.Button_Playlists).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fListener.onFragmentButtonClick(R.id.Button_Playlists);
-            }
-        });
+        view.findViewById(R.id.Button_Playlists).setOnClickListener(customClickListener);
 
         return view;
     }
@@ -61,7 +50,7 @@ public class InitialSelectionFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof FragmentListener) {
-            fListener = (FragmentListener) context;
+            fragmentListener = (FragmentListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement FragmentListener");
@@ -71,6 +60,19 @@ public class InitialSelectionFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        fListener = null;
+        fragmentListener = null;
+    }
+
+    private class TouchProcessor extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener, View.OnClickListener{
+        @Override
+        public void onClick(View v) {
+            fragmentListener.onFragmentButtonClick(v.getId());
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            return fragmentListener.onTouchEvent(event);
+        }
+
     }
 }

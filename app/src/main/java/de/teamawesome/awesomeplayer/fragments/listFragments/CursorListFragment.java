@@ -2,7 +2,6 @@ package de.teamawesome.awesomeplayer.fragments.listFragments;
 
 import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.*;
 
-import android.app.Activity;
 import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.Context;
@@ -12,17 +11,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 
-import de.teamawesome.awesomeplayer.R;
 import de.teamawesome.awesomeplayer.fragments.FragmentListener;
 
 /**
@@ -106,7 +100,7 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
      */
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        getListView().setOnTouchListener(new CursorListOnTouchListener(this));
+        getListView().setOnTouchListener(new TouchProcessor());
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -158,31 +152,24 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
      * A Scroll event is invalid if its Angle is smaller than 45 degrees.
      * A Fling event is invalid if its Angle is greater than 45 degrees or if its distance is smaller than 30 pixel.
      */
-    protected class CursorListOnTouchListener extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener{
+    protected class TouchProcessor extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener{
 
-        // The CursorListFragment used to handle onFling events
-        private CursorListFragment attachedListFragment;
         // The GestureDetector needed to handle the gesture recognition;
-        private GestureDetector gd = new GestureDetector(getActivity(),this);
+        private GestureDetector gestureDetector = new GestureDetector(getActivity(),this);
 
         /**
          * If a Fling's distance (the distance between touch and release) is smaller than this distance it is considered invalid;
          */
-        private final int minFlingDistance = 30;
+        private final int MIN_FLING_DISTANCE = 30;
         /**
          * If a Fling's Angle (the angle between its direction and the horizontal baseline) is greater than the arctan of this ratio it is considered invalid;
          * If a Scroll's Angle (the angle between its direction and the horizontal baseline) is smaller than the arctan of this ratio it is considered invalid;
          */
-        private final double maxFlingAngleRatio = 1; // == tan(flinAngle); currently the maxAngle is 45 degrees
-
-        CursorListOnTouchListener(CursorListFragment _attachCursorListFragment){
-            super();
-            attachedListFragment = _attachCursorListFragment;
-        }
+        private final double MAX_FLING_ANGLE_RATIO = 1; // == tan(flinAngle); currently the maxAngle is 45 degrees
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            return gd.onTouchEvent(event);
+            return fragmentListener.onTouchEvent(event) || gestureDetector.onTouchEvent(event);
         }
 
         /**
@@ -194,8 +181,10 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
             float distanceX = Math.abs(e1.getX() - e2.getX());
             float distanceY= Math.abs(e1.getY() - e2.getY());
             double distance = Math.pow(distanceX, 2) + Math.pow(distanceY, 2);
-            if( distanceY/distanceX > maxFlingAngleRatio || distance < minFlingDistance ) return super.onFling(e1, e2, velocityX, velocityY);
-            return attachedListFragment.onFling(e1, e2, velocityX, velocityY);
+            if( distanceY/distanceX > MAX_FLING_ANGLE_RATIO || distance < MIN_FLING_DISTANCE) return super.onFling(e1, e2, velocityX, velocityY);
+
+            Log.d("CursorListFragment","onFling");
+            return CursorListFragment.this.onFling(e1, e2, velocityX, velocityY);
         }
 
         /**
@@ -203,17 +192,18 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
          */
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            return Math.abs(distanceY/distanceX) < maxFlingAngleRatio || super.onScroll(e1, e2, distanceX, distanceY);
+//            Log.d("CursorListFragment","onScroll");
+            return Math.abs(distanceY/distanceX) < MAX_FLING_ANGLE_RATIO || super.onScroll(e1, e2, distanceX, distanceY);
         }
 
-        /**
-         * Catches all double taps and triggers the fragment transition on the activity;
-         */
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            fragmentListener.onFragmentDoubleTap(attachedListFragment);
-            return true;
-        }
+//        /**
+//         * Catches all double taps and triggers the fragment transition on the activity;
+//         */
+//        @Override
+//        public boolean onDoubleTap(MotionEvent e) {
+//            fragmentListener.onFragmentDoubleTap(attachedListFragment);
+//            return true;
+//        }
     }
 
 }

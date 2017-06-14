@@ -1,6 +1,7 @@
 package de.teamawesome.awesomeplayer.fragments;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
 
 /**
  * This interface is used to trigger events on an implementing {@link android.app.Activity} which is
@@ -22,9 +23,5 @@ public interface FragmentListener {
      */
     public void onFragmentButtonClick(int id);
 
-    /**
-     * Should be used to catch double tap events on the different fragments
-     * @param caller Should always be referencing the calling fragment.
-     */
-    public void onFragmentDoubleTap(Object caller);
+    public boolean onTouchEvent(MotionEvent event);
 }

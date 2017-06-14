@@ -3,6 +3,7 @@ package de.teamawesome.awesomeplayer.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -22,7 +23,7 @@ public class GestureCanvasFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_gesture_canvas, container, false);
-        view.setOnTouchListener(new GestureCanvasOnTouchListener(this));
+        view.setOnTouchListener(new TouchProcessor());
         return view;
     }
 
@@ -49,32 +50,21 @@ public class GestureCanvasFragment extends Fragment {
     /**
      * This class is used to handle the Gesture recognition.
      */
-    private class GestureCanvasOnTouchListener extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener{
+    private class TouchProcessor extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener{
 
-        // The CursorListFragment used to handle onFling events
-        private GestureCanvasFragment attachedListFragment;
         // The GestureDetector needed to handle the gesture recognition;
-        private GestureDetector gd = new GestureDetector(getActivity(),this);
-
-        GestureCanvasOnTouchListener(GestureCanvasFragment _attachCursorListFragment){
-            super();
-            attachedListFragment = _attachCursorListFragment;
-        }
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            return gd.onTouchEvent(event) || true;
-        }
+        private GestureDetector gestureDetector = new GestureDetector(getActivity(),this);
 
         /**
-         * Catches all double taps and triggers the fragment transition on the activity;
+         * Catches all events EXCEPT double taps!
+         * NOTE: If other Gestures are implemented the return value's inversion should be deleted.
+         * The current implementation only provides a quick and short method of catching all events except the double taps.
+         * These are handled via {@link de.teamawesome.awesomeplayer.MainMenuActivity.TouchProcessor}.
          */
         @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            fragmentListener.onFragmentDoubleTap(attachedListFragment);
-            return true;
+        public boolean onTouch(View v, MotionEvent event) {
+            return fragmentListener.onTouchEvent(event) || true;
         }
-
     }
 
 }
