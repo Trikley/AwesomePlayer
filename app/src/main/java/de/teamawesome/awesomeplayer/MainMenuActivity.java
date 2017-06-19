@@ -21,7 +21,7 @@ import de.teamawesome.awesomeplayer.fragments.listFragments.PlaylistsListFragmen
 public class MainMenuActivity extends AppCompatActivity implements FragmentListener {
     private static final String MAIN_FRAGMENT_TAG = "MAINFRAGMENT";
     private static final String OVERLAY_FRAGMENT_TAG = "OVERLAYFRAGMENT";
-    private GestureDetector doubleTapDetector;
+    public GestureDetector doubleTapDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +105,7 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
          * Catches all double taps and triggers the fragment transition on the activity;
          */
         @Override
-        public boolean onDoubleTap(MotionEvent e) {
+        public void onLongPress(MotionEvent e) {
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
             Fragment gestureCanvasOverlay = getFragmentManager().findFragmentByTag(OVERLAY_FRAGMENT_TAG);
@@ -119,9 +119,7 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
             transaction.addToBackStack(null);
             transaction.commit();
             Log.d("MainMenuActivity","onDoubleTap");
-            return true;
         }
-
     }
 
 

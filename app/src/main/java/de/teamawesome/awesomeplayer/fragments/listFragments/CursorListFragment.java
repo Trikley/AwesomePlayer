@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.SimpleCursorAdapter;
 
+import de.teamawesome.awesomeplayer.MainMenuActivity;
 import de.teamawesome.awesomeplayer.fragments.FragmentListener;
 
 /**
@@ -145,6 +146,8 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
      */
     abstract protected boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY);
 
+    abstract protected boolean onSingleTap(MotionEvent e);
+
     /**
      * This class represents the gesture handler for the all {@link CursorListFragment}s.
      * It passes all valid fling events down to the {@link CursorListFragment}'s onFling implementation.
@@ -169,7 +172,7 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            return fragmentListener.onTouchEvent(event) || gestureDetector.onTouchEvent(event);
+            return fragmentListener.onTouchEvent(event) || gestureDetector.onTouchEvent(event) ;
         }
 
         /**
@@ -196,14 +199,11 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
             return Math.abs(distanceY/distanceX) < MAX_FLING_ANGLE_RATIO || super.onScroll(e1, e2, distanceX, distanceY);
         }
 
-//        /**
-//         * Catches all double taps and triggers the fragment transition on the activity;
-//         */
-//        @Override
-//        public boolean onDoubleTap(MotionEvent e) {
-//            fragmentListener.onFragmentDoubleTap(attachedListFragment);
-//            return true;
-//        }
+        public boolean onSingleTapUp(MotionEvent e){
+            Log.d("OSC", "" + (e.getEventTime() - e.getDownTime()) );
+            return onSingleTap(e);
+        }
+
     }
 
 }
