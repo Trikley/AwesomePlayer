@@ -3,6 +3,7 @@ package de.teamawesome.awesomeplayer.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,17 +30,16 @@ public class InitialSelectionFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_initial_selection, container, false);
 
-        View.OnClickListener customClickListener = new TouchProcessor();
+        View.OnTouchListener customTouchListener = new TouchProcessor();
 
         // Listener Button ALL
-        view.findViewById(R.id.Button_All).setOnClickListener(customClickListener);
+        view.findViewById(R.id.Button_All).setOnTouchListener(customTouchListener);
 
         // Listener Button ALBUMS
-        view.findViewById(R.id.Button_Albums).setOnClickListener(customClickListener);
+        view.findViewById(R.id.Button_Albums).setOnTouchListener(customTouchListener);
 
         // Listener Button PLAYLISTS
-        view.findViewById(R.id.Button_Playlists).setOnClickListener(customClickListener);
-
+        view.findViewById(R.id.Button_Playlists).setOnTouchListener(customTouchListener);
         return view;
     }
 
@@ -63,15 +63,21 @@ public class InitialSelectionFragment extends Fragment {
         fragmentListener = null;
     }
 
-    private class TouchProcessor extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener, View.OnClickListener{
+    private class TouchProcessor extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener{
+        private GestureDetector gestureDetector = new GestureDetector(getActivity(), this);
+        private int currentViewID;
+
         @Override
-        public void onClick(View v) {
-            fragmentListener.onFragmentButtonClick(v.getId());
+        public boolean onSingleTapUp(MotionEvent e) {
+            Log.d("InitialSelectionF" , "onSingleTapUp");
+            fragmentListener.onFragmentButtonClick(currentViewID);
+            return super.onSingleTapUp(e) || true;
         }
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            return fragmentListener.onTouchEvent(event);
+            currentViewID = v.getId();
+            return fragmentListener.onTouchEvent(event) || gestureDetector.onTouchEvent(event);
         }
 
     }

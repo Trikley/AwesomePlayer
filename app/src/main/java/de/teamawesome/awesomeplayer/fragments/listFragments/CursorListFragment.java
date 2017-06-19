@@ -200,7 +200,7 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
         }
 
         public boolean onSingleTapUp(MotionEvent e){
-            Log.d("OSC", "" + (e.getEventTime() - e.getDownTime()) );
+            Log.d("CursorListFragment", "onSingleTapUp" );
             return onSingleTap(e);
         }
 

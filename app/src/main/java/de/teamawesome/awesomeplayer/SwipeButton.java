@@ -76,7 +76,7 @@ public class SwipeButton extends android.support.v7.widget.AppCompatButton {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            return gestureDetector.onTouchEvent(event) || true;
+            return gestureDetector.onTouchEvent(event) || attachedActivity.onTouchEvent(event) || true;
         }
     }
 
