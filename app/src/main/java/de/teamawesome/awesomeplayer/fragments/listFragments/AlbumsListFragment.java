@@ -37,6 +37,7 @@ public class AlbumsListFragment extends de.teamawesome.awesomeplayer.fragments.l
         arguments.putStringArray(SELECTION_ARGS, new String[]{"" + itemID});
 
         fragmentListener.onFragmentInteraction(arguments, this);
+        // Returns false to enable correct animation.
         return false;
     }
 }

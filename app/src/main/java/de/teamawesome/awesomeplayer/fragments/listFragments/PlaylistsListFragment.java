@@ -39,6 +39,8 @@ public class PlaylistsListFragment extends CursorListFragment {
         arguments.putString(URI, MediaStore.Audio.Playlists.Members.getContentUri("external", itemID).toString());
 
         fragmentListener.onFragmentInteraction(arguments, this);
-        return true;
+
+        // Returns false to enable correct animation.
+        return false;
     }
 }

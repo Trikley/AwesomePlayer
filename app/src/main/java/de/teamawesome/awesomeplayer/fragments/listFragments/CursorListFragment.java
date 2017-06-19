@@ -146,10 +146,14 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
      */
     abstract protected boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY);
 
+    /**
+     * This Abstract Method is used to handle Single Tap / click events in all list-screens.
+     * The method's head is a copy of {@link android.view.GestureDetector.OnGestureListener}.onSingleTapUp(...)
+     */
     abstract protected boolean onSingleTap(MotionEvent e);
 
     /**
-     * This class represents the gesture handler for the all {@link CursorListFragment}s.
+     * This class represents the gesture handler for all the {@link CursorListFragment}s.
      * It passes all valid fling events down to the {@link CursorListFragment}'s onFling implementation.
      * Also invalid scroll events are blocked here.
      * A Scroll event is invalid if its Angle is smaller than 45 degrees.
@@ -170,9 +174,12 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
          */
         private final double MAX_FLING_ANGLE_RATIO = 1; // == tan(flinAngle); currently the maxAngle is 45 degrees
 
+        /**
+         * Directs all events to the fragmentListener to centrally handle the long presses
+         */
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            return fragmentListener.onTouchEvent(event) || gestureDetector.onTouchEvent(event) ;
+            return getActivity().onTouchEvent(event) || gestureDetector.onTouchEvent(event) ;
         }
 
         /**
@@ -192,6 +199,7 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
 
         /**
          * Catches and denies all invalid scrolls.
+         * See MAX_FLING_ANGLE_RATIO
          */
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
@@ -199,6 +207,10 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
             return Math.abs(distanceY/distanceX) < MAX_FLING_ANGLE_RATIO || super.onScroll(e1, e2, distanceX, distanceY);
         }
 
+        /**
+         * Receives single tap / click events and directs them to the child's implementation.
+         * Should be used instead of OnListItemClick
+         */
         public boolean onSingleTapUp(MotionEvent e){
             Log.d("CursorListFragment", "onSingleTapUp" );
             return onSingleTap(e);

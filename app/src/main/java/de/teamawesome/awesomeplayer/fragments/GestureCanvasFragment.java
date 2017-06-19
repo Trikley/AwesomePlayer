@@ -56,14 +56,12 @@ public class GestureCanvasFragment extends Fragment {
         private GestureDetector gestureDetector = new GestureDetector(getActivity(),this);
 
         /**
-         * Catches all events EXCEPT double taps!
-         * NOTE: If other Gestures are implemented the return value's inversion should be deleted.
-         * The current implementation only provides a quick and short method of catching all events except the double taps.
+         * Catches all events EXCEPT long presses!
          * These are handled via {@link de.teamawesome.awesomeplayer.MainMenuActivity.TouchProcessor}.
          */
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            return fragmentListener.onTouchEvent(event) || true;
+            return getActivity().onTouchEvent(event) || true;
         }
     }
 

@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
 
 import de.teamawesome.awesomeplayer.fragments.FragmentListener;
 import de.teamawesome.awesomeplayer.fragments.GestureCanvasFragment;
@@ -19,14 +17,25 @@ import de.teamawesome.awesomeplayer.fragments.listFragments.MediaListFragment;
 import de.teamawesome.awesomeplayer.fragments.listFragments.PlaylistsListFragment;
 
 public class MainMenuActivity extends AppCompatActivity implements FragmentListener {
+    /**
+     * The Tag under which the main fragment can be found when adding / replacing fragments.
+     */
     private static final String MAIN_FRAGMENT_TAG = "MAINFRAGMENT";
+
+    /**
+     * The Tag under which the overlay fragment can be found when adding / replacing fragments.
+     */
     private static final String OVERLAY_FRAGMENT_TAG = "OVERLAYFRAGMENT";
-    public GestureDetector doubleTapDetector;
+
+    /**
+     * The gesture detector used to detect and handle long press events.
+     */
+    public GestureDetector longPressDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        doubleTapDetector = new GestureDetector(this,new TouchProcessor());
+        longPressDetector = new GestureDetector(this,new TouchProcessor());
         setContentView(R.layout.activity_main_menu);
         /* For the initial transaction the .replaceMainFragment method is not used because otherwise
         the adding of the fragment would be revertible to a blank screen.*/
@@ -80,6 +89,9 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
         }
     }
 
+    /**
+     * Replaces the main fragment with given new fragment set up with given arguments.
+     */
     protected void replaceMainFragment(Fragment newFragment, Bundle arguments){
         newFragment.setArguments(arguments);
         // Replace whatever is in the fragment_container view with this fragment,
@@ -93,21 +105,24 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return doubleTapDetector.onTouchEvent(event) || super.onTouchEvent(event);
+        return longPressDetector.onTouchEvent(event) || super.onTouchEvent(event);
     }
 
 
     /**
      * This class is used to handle the Gesture recognition.
+     * It should be used to handle all long press events on all fragments and activities.
+     * it can be reached via the activity's or the fragmentListener's onTouchEvent method.
      */
     private class TouchProcessor extends GestureDetector.SimpleOnGestureListener {
         /**
-         * Catches all double taps and triggers the fragment transition on the activity;
+         * Catches all long presses and triggers the fragment transition on the activity;
          */
         @Override
         public void onLongPress(MotionEvent e) {
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
+            // If an overlay fragment is found it is detached, else a new one is added.
             Fragment gestureCanvasOverlay = getFragmentManager().findFragmentByTag(OVERLAY_FRAGMENT_TAG);
             if(gestureCanvasOverlay != null && gestureCanvasOverlay.isAdded()){
                 transaction.detach(gestureCanvasOverlay);

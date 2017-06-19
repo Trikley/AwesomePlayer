@@ -63,21 +63,30 @@ public class InitialSelectionFragment extends Fragment {
         fragmentListener = null;
     }
 
+    /**
+     * This class is used to handle touch events on the buttons.
+     * Note that similar to the {@link de.teamawesome.awesomeplayer.fragments.listFragments.CursorListFragment} no onClick method is used.
+     * Instead onSingleTapUp handles the single tap and click events.
+     * This class
+     */
     private class TouchProcessor extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener{
         private GestureDetector gestureDetector = new GestureDetector(getActivity(), this);
         private int currentViewID;
 
+        /**
+         * Handles click events on the three buttons by triggering the fragmentsListener.
+         */
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
             Log.d("InitialSelectionF" , "onSingleTapUp");
             fragmentListener.onFragmentButtonClick(currentViewID);
-            return super.onSingleTapUp(e) || true;
+            return true;
         }
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             currentViewID = v.getId();
-            return fragmentListener.onTouchEvent(event) || gestureDetector.onTouchEvent(event);
+            return getActivity().onTouchEvent(event) || gestureDetector.onTouchEvent(event);
         }
 
     }

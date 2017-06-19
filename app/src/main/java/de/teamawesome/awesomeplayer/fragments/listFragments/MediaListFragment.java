@@ -30,6 +30,7 @@ public class MediaListFragment extends CursorListFragment {
 
     @Override
     protected boolean onSingleTap(MotionEvent e) {
+        // Returns false to enable correct animation.
         return false;
     }
 }

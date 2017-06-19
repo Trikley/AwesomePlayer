@@ -9,9 +9,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 /**
- * Created by sven on 6/13/17.
+ * This class can be used to implement a swipeable button like the one on top of all screens.
  */
-//TODO ADD IT!
 public class SwipeButton extends android.support.v7.widget.AppCompatButton {
     private Activity attachedActivity;
 
@@ -48,12 +47,18 @@ public class SwipeButton extends android.support.v7.widget.AppCompatButton {
         initialize(activity);
     }
 
+    /**
+     * Used for in all constructors
+     */
     private void initialize(Activity activity){
         attachedActivity = activity;
         setOnTouchListener(new TouchProcessor());
     }
 
-
+    /**
+     * This class handles the Touch events.
+     * It handles all fling events and triggers the activities onTouchMethod to catch long presses.
+     */
     private class TouchProcessor extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener{
 
         // The GestureDetector needed to handle the gesture recognition;
@@ -71,7 +76,7 @@ public class SwipeButton extends android.support.v7.widget.AppCompatButton {
                 //Do transaction
             }
             Log.d("SwipeButton","onFling");
-            return super.onFling(e1, e2, velocityX, velocityY);
+            return true;
         }
 
         @Override
