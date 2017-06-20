@@ -17,13 +17,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.SimpleCursorAdapter;
 
-import de.teamawesome.awesomeplayer.MainMenuActivity;
 import de.teamawesome.awesomeplayer.fragments.FragmentListener;
 
 /**
  * Simple {@link ListFragment} which holds the contents of a cursor.
  */
 public abstract class CursorListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private String SAVE_ARGUMENTS_KEY = "cursor_list_saved_arguments";
     /**
      * This {@link SimpleCursorAdapter} is used to display the cursor's search results.
      */
@@ -78,6 +78,15 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
     @Override
     public void setArguments(Bundle args) {
         super.setArguments(args);
+        fillFromArguments(args);
+    }
+
+
+    /**
+     * Used to set and restore the search arguments.
+     * While restoring the setArguments method thr
+     */
+    private void fillFromArguments(Bundle args){
         cursorLoaderUri = Uri.parse(args.getString(URI));
         from= args.getStringArray(FROM);
         projection = args.getStringArray(PROJECTION);
@@ -89,10 +98,24 @@ public abstract class CursorListFragment extends ListFragment implements LoaderM
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Restores the saved Arguments from the saved bundle
+        if(savedInstanceState != null && savedInstanceState.getBundle(SAVE_ARGUMENTS_KEY) != null) {
+            fillFromArguments(savedInstanceState.getBundle(SAVE_ARGUMENTS_KEY));
+        }
         // simple_list_item_1 is a ListItem layout provided from android.
         simpleCursorAdapter = new SimpleCursorAdapter(getActivity(),android.R.layout.simple_list_item_1,null,from,to, 0);
         getLoaderManager().initLoader(0, null, this);
         setListAdapter(simpleCursorAdapter);
+
+    }
+
+    /**
+     * Saves the list's arguments when the activity is stopped.
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBundle(SAVE_ARGUMENTS_KEY, getArguments());
     }
 
     /**
