@@ -2,6 +2,10 @@ package de.teamawesome.awesomeplayer;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -22,6 +26,34 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
         // Create new fragment and transaction
         Fragment initialFragment = new InitialSelectionFragment();
         replaceFragment(initialFragment, null);
+
+
+        // ---------------
+        ContentResolver cr = this.getContentResolver();
+
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
+        String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
+        Cursor cur = cr.query(uri, null, selection, null, sortOrder);
+        int count = 0;
+
+        if(cur != null)
+        {
+            count = cur.getCount();
+
+            if(count > 0)
+            {
+                while(cur.moveToNext())
+                {
+                    String data = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA));
+                    System.out.println(data);
+                }
+
+            }
+        }
+
+        cur.close();
+        // -------------
     }
 
     /**
