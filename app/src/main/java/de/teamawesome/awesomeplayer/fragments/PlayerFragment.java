@@ -8,13 +8,18 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import de.teamawesome.awesomeplayer.R;
 import de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils;
 
+import static de.teamawesome.awesomeplayer.R.id.Songtitle;
+
 public class PlayerFragment extends Fragment {
 
     private FragmentListener fListener;
+    private String currentTitle;
 
     public PlayerFragment() {
         // Required empty public constructor
@@ -30,14 +35,22 @@ public class PlayerFragment extends Fragment {
         for(String path : paths) {
             System.out.println(path);
         }
-
+        currentTitle = paths[0];
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.activity_screen_ii, container, false);
+
+        View view = inflater.inflate(R.layout.activity_screen_ii, container, false);
+        EditText editText = (EditText) view.findViewById(R.id.Songtitle);
+        editText.setText(currentTitle, TextView.BufferType.EDITABLE);
+
+
+
+
+        return view;
     }
 
     /**

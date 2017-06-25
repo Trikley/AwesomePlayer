@@ -24,7 +24,7 @@
         android:layout_marginTop="36dp"
         app:layout_constraintTop_toBottomOf="@+id/pause"
         android:layout_marginEnd="26dp"
-        android:layout_marginLeft="-2dp"
+        android:layout_marginLeft="16dp"
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <Button
@@ -34,7 +34,10 @@
         android:text="stop"
         android:layout_marginTop="36dp"
         app:layout_constraintTop_toBottomOf="@+id/pause"
-        tools:layout_editor_absoluteX="148dp" />
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintHorizontal_bias="0.486"
+        app:layout_constraintLeft_toLeftOf="@+id/backwards" />
 
     <Button
         android:id="@+id/forwards"
@@ -74,7 +77,7 @@
         app:layout_constraintTop_toBottomOf="@+id/progressBarSong"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="0dp" />
 
