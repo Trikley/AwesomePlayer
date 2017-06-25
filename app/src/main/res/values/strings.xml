@@ -4,7 +4,7 @@
     <string name="Button_Albums_Text">ALBUMS</string>
     <string name="Button_Playlists_Text">PLAYLISTS</string>
     <string name="Button_Play_Text">Play</string>
-    <string name="Button_Forward_Text">gt gt</string>
-    <string name="Button_Backward_Text">lt lt</string>
+    <string name="Button_Forward_Text">>></string>
+    <string name="Button_Backward_Text">&lt;&lt;</string>
 
 </resources>

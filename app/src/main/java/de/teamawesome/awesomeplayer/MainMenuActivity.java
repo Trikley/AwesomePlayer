@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import de.teamawesome.awesomeplayer.fragments.FragmentListener;
 import de.teamawesome.awesomeplayer.fragments.InitialSelectionFragment;
+import de.teamawesome.awesomeplayer.fragments.PlayerFragment;
 import de.teamawesome.awesomeplayer.fragments.listFragments.AlbumsListFragment;
 import de.teamawesome.awesomeplayer.fragments.listFragments.ListBundles;
 import de.teamawesome.awesomeplayer.fragments.listFragments.MediaListFragment;
