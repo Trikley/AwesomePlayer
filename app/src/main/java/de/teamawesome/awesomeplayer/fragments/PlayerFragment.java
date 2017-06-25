@@ -2,6 +2,7 @@ package de.teamawesome.awesomeplayer.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -19,7 +20,10 @@ import static de.teamawesome.awesomeplayer.R.id.Songtitle;
 public class PlayerFragment extends Fragment {
 
     private FragmentListener fListener;
-    private String currentTitle;
+    private String currentTitle = " ";
+
+
+
 
     public PlayerFragment() {
         // Required empty public constructor
@@ -31,11 +35,15 @@ public class PlayerFragment extends Fragment {
         System.out.println(getArguments().toString());
         String[] paths = (String[]) getArguments().get(ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER);
 
+
         System.out.println("Playlist Size: " + paths.length + "  Entrys :");
         for(String path : paths) {
             System.out.println(path);
         }
-        currentTitle = paths[0];
+
+        currentTitle = getArguments().getStringArray(ListUtils.MEDIA_DISPLAY_NAMES_IN_ORDER)[0];
+
+
     }
 
     @Override
@@ -46,6 +54,7 @@ public class PlayerFragment extends Fragment {
         View view = inflater.inflate(R.layout.activity_screen_ii, container, false);
         EditText editText = (EditText) view.findViewById(R.id.Songtitle);
         editText.setText(currentTitle, TextView.BufferType.EDITABLE);
+
 
 
 
