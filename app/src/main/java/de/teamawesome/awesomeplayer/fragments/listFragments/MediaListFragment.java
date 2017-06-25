@@ -1,9 +1,15 @@
 package de.teamawesome.awesomeplayer.fragments.listFragments;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER;
 import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.SELECTION_ARGS;
 
 /**
@@ -18,7 +24,19 @@ public class MediaListFragment extends CursorListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Bundle arguments = ListBundles.MEDIA_BUNDLE.get();
-        arguments.putStringArray(SELECTION_ARGS, new String[]{"" + id});
+        Cursor c = (Cursor) l.getItemAtPosition(position);
+        if(!(c.getCount()>0)) {
+            throw new RuntimeException("Something went terribly wrong! The cursor " + c + " is retrieved" +
+            " from an existing ListView and should always have more than 0 rows!");
+        }
+        ArrayList<String> mediaDataInPlaybackOrder = new ArrayList<>();
+        //c.getString(1) returns the second collumn of the row the curser points at. This should be
+        //the file-path to the selected media
+        mediaDataInPlaybackOrder.add(c.getString(1));
+        while(c.moveToNext()) {
+            mediaDataInPlaybackOrder.add(c.getString(1));
+        }
+        arguments.putStringArray(MEDIA_DATA_IN_PLAYBACK_ORDER, (String[]) mediaDataInPlaybackOrder.toArray(new String[0]));
         fragmentListener.onFragmentInteraction(arguments, this);
     }
 }

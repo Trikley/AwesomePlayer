@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.teamawesome.awesomeplayer.R;
+import de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils;
 
 public class PlayerFragment extends Fragment {
 
@@ -23,6 +24,13 @@ public class PlayerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         System.out.println(getArguments().toString());
+        String[] paths = (String[]) getArguments().get(ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER);
+
+        System.out.println("Playlist Size: " + paths.length + "  Entrys :");
+        for(String path : paths) {
+            System.out.println(path);
+        }
+
     }
 
     @Override

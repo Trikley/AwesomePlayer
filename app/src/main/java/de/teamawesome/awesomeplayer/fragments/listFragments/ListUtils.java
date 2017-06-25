@@ -33,5 +33,9 @@ public final class ListUtils {
     public static final Uri PLAYLISTS_URI = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
     public static final String[] PLAYLISTS_FROM = {MediaStore.Audio.Playlists.NAME};
 
-
+    /**
+     * The following variables are used for passing the selection of songs from {@link MediaListFragment} to anywhere, really.
+     * They define keys in bundles, which hold the actual information.
+     */
+    public static final String MEDIA_DATA_IN_PLAYBACK_ORDER = "mdipo";
 }
