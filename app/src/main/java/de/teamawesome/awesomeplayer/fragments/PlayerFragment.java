@@ -13,6 +13,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -234,16 +235,29 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
     }
 
     @Override
-    public void newSongStartsPlaying(String pathToSong) {
-        String[] songNames = getArguments().getStringArray(ListUtils.MEDIA_DISPLAY_NAMES_IN_ORDER);
-        String[] paths = getArguments().getStringArray(ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER);
-        if(songNames!=null && songNames.length>0 && paths.length >0 && paths != null) {
+    public void newSongStartsPlaying(final String pathToSong) {
+        new android.os.Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                String[] songNames = getArguments().getStringArray(ListUtils.MEDIA_DISPLAY_NAMES_IN_ORDER);
+                String[] paths = getArguments().getStringArray(ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER);
+                if(songNames!=null && songNames.length>0 && paths.length >0 && paths != null) {
+                    int indexOfPath = Arrays.asList(paths).indexOf(pathToSong);
+                    if(indexOfPath<songNames.length && indexOfPath>=0) {
+                        currentTitle = songNames[indexOfPath];
+                    }else {
+                        //TODO Do something useful here!
+                        currentTitle = "ERROR";
+                    }
 
-            currentTitle = songNames[Arrays.asList(paths).indexOf(pathToSong)];
 
-            View view = getView();
-            EditText editText = (EditText) view.findViewById(R.id.Songtitle);
-            editText.setText(currentTitle, TextView.BufferType.EDITABLE);
-        }
+                    View view = getView();
+                    if(view!=null) {
+                        EditText editText = (EditText) view.findViewById(R.id.Songtitle);
+                        editText.setText(currentTitle, TextView.BufferType.EDITABLE);
+                    }
+                }
+            }
+        });
     }
 }
