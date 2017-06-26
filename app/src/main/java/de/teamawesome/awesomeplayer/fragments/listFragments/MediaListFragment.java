@@ -38,14 +38,8 @@ public class MediaListFragment extends CursorListFragment {
 
     @Override
     protected boolean onSingleTap(MotionEvent e) {
-        // Returns false to enable correct animation.
-        return false;
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
         Bundle arguments = ListBundles.MEDIA_BUNDLE.get();
-        Cursor c = (Cursor) l.getItemAtPosition(position);
+        Cursor c = (Cursor) getListView().getItemAtPosition(getListView().pointToPosition((int)e.getX(), (int)e.getY()));
 
         for(String name : c.getColumnNames()) {
             System.out.println(name);
@@ -54,7 +48,7 @@ public class MediaListFragment extends CursorListFragment {
 
         if(!(c.getCount()>0)) {
             throw new RuntimeException("Something went terribly wrong! The cursor " + c + " is retrieved" +
-            " from an existing ListView and should always have more than 0 rows!");
+                    " from an existing ListView and should always have more than 0 rows!");
         }
         ArrayList<String> mediaDataInPlaybackOrder = new ArrayList<>();
         ArrayList<String> mediaDisplayNamesInOrder = new ArrayList<>();
@@ -73,5 +67,8 @@ public class MediaListFragment extends CursorListFragment {
         arguments.putStringArray(MEDIA_DISPLAY_NAMES_IN_ORDER, mediaDisplayNamesInOrder.toArray(new String[0]));
         arguments.putStringArray(MEDIA_ALBUM_ID_IN_ORDER, mediaAlbumIdInOrder.toArray(new String[0]));
         fragmentListener.onFragmentInteraction(arguments, this);
+        // Returns false to enable correct animation.
+        return false;
     }
+
 }
