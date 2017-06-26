@@ -37,6 +37,10 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
         super.onCreate(savedInstanceState);
         longPressDetector = new GestureDetector(this,new TouchProcessor());
         setContentView(R.layout.activity_main_menu);
+
+        if(savedInstanceState != null) return;
+        /* The following code will only be executed on the initial creation.
+           Afterwards the if statement prevents wrongly attached fragments.*/
         /* For the initial transaction the .replaceMainFragment method is not used because otherwise
         the adding of the fragment would be revertible to a blank screen.*/
         Fragment initialFragment = new InitialSelectionFragment();
