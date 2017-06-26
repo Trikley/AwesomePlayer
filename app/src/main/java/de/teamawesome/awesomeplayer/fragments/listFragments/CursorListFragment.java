@@ -5,7 +5,6 @@ import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.*;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.app.LoaderManager;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;

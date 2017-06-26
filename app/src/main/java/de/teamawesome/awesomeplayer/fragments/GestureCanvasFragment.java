@@ -1,6 +1,6 @@
 package de.teamawesome.awesomeplayer.fragments;
 
-import android.content.Context;
+import android.app.Activity;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
@@ -31,12 +31,12 @@ public class GestureCanvasFragment extends Fragment {
      * onAttach and onDetach are used to handle the assignment of 'fragmentListener'
      */
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof FragmentListener) {
-            fragmentListener = (FragmentListener) context;
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof FragmentListener) {
+            fragmentListener = (FragmentListener) activity;
         } else {
-            throw new RuntimeException(context.toString()
+            throw new RuntimeException(activity.toString()
                     + " must implement FragmentListener");
         }
     }
