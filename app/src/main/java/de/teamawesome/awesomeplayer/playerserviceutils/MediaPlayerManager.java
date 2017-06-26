@@ -105,6 +105,7 @@ public class MediaPlayerManager implements Runnable {
     public void resume() {
         if(paused) {
             mediaPlayer.start();
+            paused = false;
         }
     }
 
