@@ -9,29 +9,35 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.Arrays;
 
 import de.teamawesome.awesomeplayer.PlayerService;
 import de.teamawesome.awesomeplayer.R;
 import de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils;
+import de.teamawesome.awesomeplayer.playerserviceutils.IPlaybackListener;
 
 import static de.teamawesome.awesomeplayer.R.id.Songtitle;
+import static de.teamawesome.awesomeplayer.R.id.pause;
 import static de.teamawesome.awesomeplayer.R.id.play;
 import static de.teamawesome.awesomeplayer.R.id.albumArt;
 
-public class PlayerFragment extends Fragment implements ServiceConnection{
+public class PlayerFragment extends Fragment implements ServiceConnection, IPlaybackListener{
 
     private FragmentListener fListener;
     private String currentTitle = " ";
@@ -46,17 +52,7 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println(getArguments().toString());
-        String[] paths = (String[]) getArguments().get(ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER);
-
-
-        System.out.println("Playlist Size: " + paths.length + "  Entrys :");
-        for(String path : paths) {
-            System.out.println(path);
-        }
         // get the current title
-        currentTitle = getArguments().getStringArray(ListUtils.MEDIA_DISPLAY_NAMES_IN_ORDER)[0];
-
 
     }
 
@@ -64,10 +60,7 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
     public void onResume() {
         super.onResume();
         if(!playerServiceBound) {
-            Intent playerServiceIntent = new Intent(getActivity().getApplication(), PlayerService.class);
-            System.out.println("Service started: " + getActivity().getApplication().startService(playerServiceIntent));
-            System.out.println("Service bound? " + getActivity().getApplication().bindService(playerServiceIntent , this, 0));
-            playerServiceBound = true;
+            bindToPlayerService();
         }
     }
 
@@ -75,9 +68,7 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
     public void onPause() {
         super.onPause();
         if(playerServiceBound) {
-            getActivity().getApplication().unbindService(this);
-            playerBind = null;
-            playerServiceBound = false;
+            unbindFromPlayerService();
         }
     }
 
@@ -93,11 +84,57 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
         // Inflate the layout for this fragment
         // set the current Title
         View view = inflater.inflate(R.layout.activity_screen_ii, container, false);
-        EditText editText = (EditText) view.findViewById(R.id.Songtitle);
-        editText.setText(currentTitle, TextView.BufferType.EDITABLE);
+
+        //mapping functions to Buttons
+        //Pause Button
+        Button pauseButton = (Button)view.findViewById(R.id.pause);
+        pauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(playerBind != null) {
+                    playerBind.pause();
+                }
+            }
+        });
+
+        //Stop Button
+        Button StopButton = (Button)view.findViewById(R.id.stop);
+        StopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(playerBind != null) {
+                    playerBind.clearPlayQueue();
+                    playerBind.stop();
+                }
+            }
+        });
+
+        //Play Button
+        Button PlayButton = (Button)view.findViewById(R.id.play);
+        PlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(playerBind != null) {
+                    playerBind.resume();
+                }
+            }
+        });
+
+        //Next Button
+        Button NextButton = (Button)view.findViewById(R.id.next);
+        NextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(playerBind != null) {
+                    playerBind.stop();
+                }
+            }
+        });
 
 
-/**
+
+
+/**     //Not-sure-if-working-Album-art-load-Prototype
         //get the current album art
         Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null, null, null, null);
 
@@ -163,18 +200,64 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
     public void onServiceConnected(ComponentName name, IBinder service) {
         playerBind = (PlayerService.PlayerBind) service;
         playerServiceBound = true;
-        playerBind.clearPlayQueue();
-        playerBind.stop();
         String[] pathToSongs = getArguments().getStringArray(ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER);
-        playerBind.playSongNow(pathToSongs[0]);
-        for(int i=1; i<pathToSongs.length; i++) {
-            playerBind.playSongWhenReady(pathToSongs[i]);
+        if(pathToSongs != null && pathToSongs.length>0) {
+            playerBind.clearPlayQueue();
+            playerBind.stop();
+            playerBind.playSongNow(pathToSongs[0]);
+            for (int i = 1; i < pathToSongs.length; i++) {
+                playerBind.playSongWhenReady(pathToSongs[i]);
+
+            }
         }
+        playerBind.addPlaybackListener(this);
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
+        playerBind.removePlaybackListener(this);
         playerBind = null;
         playerServiceBound = false;
+
+    }
+
+    private void bindToPlayerService() {
+        Intent playerServiceIntent = new Intent(getActivity().getApplication(), PlayerService.class);
+        System.out.println("Service started: " + getActivity().getApplication().startService(playerServiceIntent));
+        System.out.println("Service bound? " + getActivity().getApplication().bindService(playerServiceIntent , this, 0));
+        playerServiceBound = true;
+    }
+
+    private void unbindFromPlayerService() {
+        getActivity().getApplication().unbindService(this);
+        playerBind = null;
+        playerServiceBound = false;
+    }
+
+    @Override
+    public void newSongStartsPlaying(final String pathToSong) {
+        new android.os.Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                String[] songNames = getArguments().getStringArray(ListUtils.MEDIA_DISPLAY_NAMES_IN_ORDER);
+                String[] paths = getArguments().getStringArray(ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER);
+                if(songNames!=null && songNames.length>0 && paths.length >0 && paths != null) {
+                    int indexOfPath = Arrays.asList(paths).indexOf(pathToSong);
+                    if(indexOfPath<songNames.length && indexOfPath>=0) {
+                        currentTitle = songNames[indexOfPath];
+                    }else {
+                        //TODO Do something useful here!
+                        currentTitle = "ERROR";
+                    }
+
+
+                    View view = getView();
+                    if(view!=null) {
+                        EditText editText = (EditText) view.findViewById(R.id.Songtitle);
+                        editText.setText(currentTitle, TextView.BufferType.EDITABLE);
+                    }
+                }
+            }
+        });
     }
 }
