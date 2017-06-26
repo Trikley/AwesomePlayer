@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -17,6 +18,7 @@ import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,6 +30,7 @@ import de.teamawesome.awesomeplayer.R;
 import de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils;
 
 import static de.teamawesome.awesomeplayer.R.id.Songtitle;
+import static de.teamawesome.awesomeplayer.R.id.pause;
 import static de.teamawesome.awesomeplayer.R.id.play;
 import static de.teamawesome.awesomeplayer.R.id.albumArt;
 
@@ -84,8 +87,56 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
         EditText editText = (EditText) view.findViewById(R.id.Songtitle);
         editText.setText(currentTitle, TextView.BufferType.EDITABLE);
 
+        //mapping functions to Buttons
+        //Pause Button
+        Button pauseButton = (Button)view.findViewById(R.id.pause);
+        pauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(playerBind != null) {
+                    playerBind.pause();
+                }
+            }
+        });
 
-/**
+        //Stop Button
+        Button StopButton = (Button)view.findViewById(R.id.stop);
+        StopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(playerBind != null) {
+                    playerBind.clearPlayQueue();
+                    playerBind.stop();
+                }
+            }
+        });
+
+        //Play Button
+        Button PlayButton = (Button)view.findViewById(R.id.play);
+        PlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(playerBind != null) {
+                    playerBind.resume();
+                }
+            }
+        });
+
+        //Next Button
+        Button NextButton = (Button)view.findViewById(R.id.next);
+        NextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(playerBind != null) {
+                    playerBind.stop();
+                }
+            }
+        });
+
+
+
+
+/**     //Not-sure-if-working-Album-art-load-Prototype
         //get the current album art
         Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null, null, null, null);
 
