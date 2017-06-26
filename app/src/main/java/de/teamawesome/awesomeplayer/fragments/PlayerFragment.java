@@ -24,17 +24,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.Arrays;
 
 import de.teamawesome.awesomeplayer.PlayerService;
 import de.teamawesome.awesomeplayer.R;
 import de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils;
+import de.teamawesome.awesomeplayer.playerserviceutils.IPlaybackListener;
 
 import static de.teamawesome.awesomeplayer.R.id.Songtitle;
 import static de.teamawesome.awesomeplayer.R.id.pause;
 import static de.teamawesome.awesomeplayer.R.id.play;
 import static de.teamawesome.awesomeplayer.R.id.albumArt;
 
-public class PlayerFragment extends Fragment implements ServiceConnection{
+public class PlayerFragment extends Fragment implements ServiceConnection, IPlaybackListener{
 
     private FragmentListener fListener;
     private String currentTitle = " ";
@@ -50,10 +52,7 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // get the current title
-        String[] songNames = getArguments().getStringArray(ListUtils.MEDIA_DISPLAY_NAMES_IN_ORDER);
-        if(songNames!=null && songNames.length>0) {
-            currentTitle = songNames[0];
-        }
+
     }
 
     @Override
@@ -84,8 +83,6 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
         // Inflate the layout for this fragment
         // set the current Title
         View view = inflater.inflate(R.layout.activity_screen_ii, container, false);
-        EditText editText = (EditText) view.findViewById(R.id.Songtitle);
-        editText.setText(currentTitle, TextView.BufferType.EDITABLE);
 
         //mapping functions to Buttons
         //Pause Button
@@ -209,14 +206,18 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
             playerBind.playSongNow(pathToSongs[0]);
             for (int i = 1; i < pathToSongs.length; i++) {
                 playerBind.playSongWhenReady(pathToSongs[i]);
+
             }
         }
+        playerBind.addPlaybackListener(this);
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
+        playerBind.removePlaybackListener(this);
         playerBind = null;
         playerServiceBound = false;
+
     }
 
     private void bindToPlayerService() {
@@ -230,5 +231,19 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
         getActivity().getApplication().unbindService(this);
         playerBind = null;
         playerServiceBound = false;
+    }
+
+    @Override
+    public void newSongStartsPlaying(String pathToSong) {
+        String[] songNames = getArguments().getStringArray(ListUtils.MEDIA_DISPLAY_NAMES_IN_ORDER);
+        String[] paths = getArguments().getStringArray(ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER);
+        if(songNames!=null && songNames.length>0 && paths.length >0 && paths != null) {
+
+            currentTitle = songNames[Arrays.asList(paths).indexOf(pathToSong)];
+
+            View view = getView();
+            EditText editText = (EditText) view.findViewById(R.id.Songtitle);
+            editText.setText(currentTitle, TextView.BufferType.EDITABLE);
+        }
     }
 }
