@@ -1,5 +1,11 @@
 package de.teamawesome.awesomeplayer.fragments.listFragments;
 
+
+import android.app.ListFragment;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -17,8 +23,24 @@ import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.SEL
 /**
  * A {@link CursorListFragment} used to display songs.
  */
-
 public class MediaListFragment extends CursorListFragment {
+
+    @Override
+    protected boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        // The flung item's position in the list ( 0 based ).
+        int listPosition= getListView().pointToPosition((int) e1.getX(), (int) e1.getY());
+        // The flung item's id which can be used to querry for data from the MediaStore.
+        long itemID = getListView().getItemIdAtPosition( listPosition );
+
+        //Log.d("FLING","Fling-position -- " + listPosition );
+        return false;
+    }
+
+    @Override
+    protected boolean onSingleTap(MotionEvent e) {
+        // Returns false to enable correct animation.
+        return false;
+
     /**
      * Used to trigger the Frgment transition to a {@link MediaListFragment} displaying all songs
      * from the clicked album.
@@ -57,7 +79,5 @@ public class MediaListFragment extends CursorListFragment {
         arguments.putStringArray(MEDIA_DISPLAY_NAMES_IN_ORDER, mediaDisplayNamesInOrder.toArray(new String[0]));
         arguments.putStringArray(MEDIA_ALBUM_ID_IN_ORDER, mediaAlbumIdInOrder.toArray(new String[0]));
         fragmentListener.onFragmentInteraction(arguments, this);
-
-
     }
 }

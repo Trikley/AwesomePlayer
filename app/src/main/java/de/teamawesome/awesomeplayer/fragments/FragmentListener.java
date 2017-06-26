@@ -1,6 +1,7 @@
 package de.teamawesome.awesomeplayer.fragments;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
 
 /**
  * This interface is used to trigger events on an implementing {@link android.app.Activity} which is
