@@ -36,9 +36,6 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
     private FragmentListener fListener;
     private String currentTitle = " ";
 
-
-
-    private String currentTitle;
     private PlayerService.PlayerBind playerBind = null;
     private boolean playerServiceBound = false;
 
