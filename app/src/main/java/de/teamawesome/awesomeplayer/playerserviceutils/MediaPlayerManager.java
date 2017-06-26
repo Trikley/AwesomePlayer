@@ -51,7 +51,7 @@ public class MediaPlayerManager implements Runnable {
                     keepRunning = false;
                     break;
                 }
-                if(playManager.returnQueueLength()<1) {
+                if(playManager.returnQueueLength()<1 || paused) {
                     Thread.yield();
                     continue;
                 }
