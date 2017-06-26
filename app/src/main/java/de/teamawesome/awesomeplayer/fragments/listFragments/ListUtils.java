@@ -39,4 +39,5 @@ public final class ListUtils {
      */
     public static final String MEDIA_DATA_IN_PLAYBACK_ORDER = "mdipo";
     public static final String MEDIA_DISPLAY_NAMES_IN_ORDER = "mdnio";
+    public static final String MEDIA_ALBUM_ID_IN_ORDER = "maiio";
 }
