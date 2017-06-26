@@ -2,6 +2,10 @@ package de.teamawesome.awesomeplayer;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +15,7 @@ import android.view.MotionEvent;
 import de.teamawesome.awesomeplayer.fragments.FragmentListener;
 import de.teamawesome.awesomeplayer.fragments.GestureCanvasFragment;
 import de.teamawesome.awesomeplayer.fragments.InitialSelectionFragment;
+import de.teamawesome.awesomeplayer.fragments.PlayerFragment;
 import de.teamawesome.awesomeplayer.fragments.listFragments.AlbumsListFragment;
 import de.teamawesome.awesomeplayer.fragments.listFragments.ListBundles;
 import de.teamawesome.awesomeplayer.fragments.listFragments.MediaListFragment;
@@ -44,9 +49,11 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
         /* For the initial transaction the .replaceMainFragment method is not used because otherwise
         the adding of the fragment would be revertible to a blank screen.*/
         Fragment initialFragment = new InitialSelectionFragment();
+
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.add(R.id.MainContainer, initialFragment,MAIN_FRAGMENT_TAG);
         transaction.commit();
+
     }
 
     /**
@@ -60,7 +67,7 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
     @Override
     public void onFragmentInteraction(Bundle arguments, Object caller) {
         if(caller instanceof MediaListFragment){
-
+            replaceFragment(new PlayerFragment(), arguments);
         }
         if(caller instanceof AlbumsListFragment){
             replaceMainFragment(new MediaListFragment(), arguments);
