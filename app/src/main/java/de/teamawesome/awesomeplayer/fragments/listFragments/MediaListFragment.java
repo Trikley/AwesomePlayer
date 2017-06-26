@@ -40,13 +40,7 @@ public class MediaListFragment extends CursorListFragment {
     protected boolean onSingleTap(MotionEvent e) {
         // Returns false to enable correct animation.
         return false;
-
-    /**
-     * Used to trigger the Frgment transition to a {@link MediaListFragment} displaying all songs
-     * from the clicked album.
-     */
-
-
+    }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
