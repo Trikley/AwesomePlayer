@@ -46,28 +46,18 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println(getArguments().toString());
-        String[] paths = (String[]) getArguments().get(ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER);
-
-
-        System.out.println("Playlist Size: " + paths.length + "  Entrys :");
-        for(String path : paths) {
-            System.out.println(path);
-        }
         // get the current title
-        currentTitle = getArguments().getStringArray(ListUtils.MEDIA_DISPLAY_NAMES_IN_ORDER)[0];
-
-
+        String[] songNames = getArguments().getStringArray(ListUtils.MEDIA_DISPLAY_NAMES_IN_ORDER);
+        if(songNames!=null && songNames.length>0) {
+            currentTitle = songNames[0];
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         if(!playerServiceBound) {
-            Intent playerServiceIntent = new Intent(getActivity().getApplication(), PlayerService.class);
-            System.out.println("Service started: " + getActivity().getApplication().startService(playerServiceIntent));
-            System.out.println("Service bound? " + getActivity().getApplication().bindService(playerServiceIntent , this, 0));
-            playerServiceBound = true;
+            bindToPlayerService();
         }
     }
 
@@ -75,9 +65,7 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
     public void onPause() {
         super.onPause();
         if(playerServiceBound) {
-            getActivity().getApplication().unbindService(this);
-            playerBind = null;
-            playerServiceBound = false;
+            unbindFromPlayerService();
         }
     }
 
@@ -163,17 +151,32 @@ public class PlayerFragment extends Fragment implements ServiceConnection{
     public void onServiceConnected(ComponentName name, IBinder service) {
         playerBind = (PlayerService.PlayerBind) service;
         playerServiceBound = true;
-        playerBind.clearPlayQueue();
-        playerBind.stop();
         String[] pathToSongs = getArguments().getStringArray(ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER);
-        playerBind.playSongNow(pathToSongs[0]);
-        for(int i=1; i<pathToSongs.length; i++) {
-            playerBind.playSongWhenReady(pathToSongs[i]);
+        if(pathToSongs != null && pathToSongs.length>0) {
+            playerBind.clearPlayQueue();
+            playerBind.stop();
+            playerBind.playSongNow(pathToSongs[0]);
+            for (int i = 1; i < pathToSongs.length; i++) {
+                playerBind.playSongWhenReady(pathToSongs[i]);
+            }
         }
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
+        playerBind = null;
+        playerServiceBound = false;
+    }
+
+    private void bindToPlayerService() {
+        Intent playerServiceIntent = new Intent(getActivity().getApplication(), PlayerService.class);
+        System.out.println("Service started: " + getActivity().getApplication().startService(playerServiceIntent));
+        System.out.println("Service bound? " + getActivity().getApplication().bindService(playerServiceIntent , this, 0));
+        playerServiceBound = true;
+    }
+
+    private void unbindFromPlayerService() {
+        getActivity().getApplication().unbindService(this);
         playerBind = null;
         playerServiceBound = false;
     }
