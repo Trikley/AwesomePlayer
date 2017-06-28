@@ -8,36 +8,38 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import de.teamawesome.awesomeplayer.model.Song;
+
 public class PlaybackQueueManager {
 
-    private Queue<String> playQueue;
+    private Queue<Song> playQueue;
 
     public PlaybackQueueManager() {
         super();
         playQueue = new ConcurrentLinkedQueue<>();
     }
 
-    public void appendSong(String pathToSong) {
-        playQueue.add(pathToSong);
+    public void appendSong(Song song) {
+        playQueue.add(song);
     }
 
-    public void appendAllSongs(String[] paths) {
-        playQueue.addAll(Arrays.asList(paths));
+    public void appendAllSongs(Song[] songs) {
+        playQueue.addAll(Arrays.asList(songs));
     }
 
-    public void insertInPosition(int positionIndex, String path) {
-        ArrayList<String> temp = new ArrayList<>(playQueue.size()+1);
+    public void insertInPosition(int positionIndex, Song song) {
+        ArrayList<Song> temp = new ArrayList<>(playQueue.size()+1);
         temp.addAll(playQueue);
         playQueue.clear();
         if(positionIndex>=temp.size()) {
-            temp.add(path);
+            temp.add(song);
         }else {
-            temp.add(positionIndex, path);
+            temp.add(positionIndex, song);
         }
         playQueue.addAll(temp);
     }
 
-    public String pollSongPath() {
+    public Song pollSongPath() {
         return playQueue.poll();
     }
 
@@ -54,7 +56,7 @@ public class PlaybackQueueManager {
             throw new IllegalArgumentException("Argument " + positionIndex + " is greater or equal to " +
                     "Queue length: " + playQueue.size());
         }else {
-            ArrayList<String> temp = new ArrayList<>(playQueue.size());
+            ArrayList<Song> temp = new ArrayList<>(playQueue.size());
             temp.addAll(playQueue);
             playQueue.clear();
             temp.remove(positionIndex);
@@ -62,8 +64,8 @@ public class PlaybackQueueManager {
         }
     }
 
-    public List<String> returnListCopy() {
-        List<String> result = new LinkedList<String>();
+    public List<Song> returnListCopy() {
+        List<Song> result = new LinkedList<>();
         result.addAll(playQueue);
         return result;
     }

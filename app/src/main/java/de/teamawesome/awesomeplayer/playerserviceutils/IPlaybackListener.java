@@ -1,10 +1,8 @@
 package de.teamawesome.awesomeplayer.playerserviceutils;
 
-/**
- * Created by Tristan on 26/06/2017.
- */
+import de.teamawesome.awesomeplayer.model.Song;
 
 public interface IPlaybackListener {
 
-    void newSongStartsPlaying(String pathToSong);
+    void newSongStartsPlaying(Song song);
 }
