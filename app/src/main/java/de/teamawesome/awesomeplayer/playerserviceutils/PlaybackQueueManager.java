@@ -52,7 +52,7 @@ public class PlaybackQueueManager {
     public void removeSongFromQueue(int positionIndex) {
         if(positionIndex>=playQueue.size()) {
             throw new IllegalArgumentException("Argument " + positionIndex + " is greater or equal to " +
-                    "Quue length: " + playQueue.size());
+                    "Queue length: " + playQueue.size());
         }else {
             ArrayList<String> temp = new ArrayList<>(playQueue.size());
             temp.addAll(playQueue);
