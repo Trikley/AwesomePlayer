@@ -256,8 +256,6 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
                         EditText editText = (EditText) view.findViewById(R.id.Songtitle);
                         editText.setText(currentTitle, TextView.BufferType.EDITABLE);
 
-                        //Not-sure-if-working-Album-art-load-Prototype
-                        //get the current album art
                         Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                                 new String[] {MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
                                 MediaStore.Audio.Albums._ID+ "=?",
