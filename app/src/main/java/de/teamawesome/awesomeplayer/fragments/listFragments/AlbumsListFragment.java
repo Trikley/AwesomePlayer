@@ -2,10 +2,14 @@ package de.teamawesome.awesomeplayer.fragments.listFragments;
 
 import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.*;
 
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
+
+import de.teamawesome.awesomeplayer.model.Song;
 
 /**
  * A {@link CursorListFragment} used to display albums.
@@ -20,6 +24,15 @@ public class AlbumsListFragment extends de.teamawesome.awesomeplayer.fragments.l
 
     @Override
     protected boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        // The tapped item's position in the list ( 0 based ).
+        int listPosition= getListView().pointToPosition((int) e1.getX(), (int) e1.getY());
+        // The tapped item's id which can be used to querry for data from the MediaStore.
+        long itemID = getListView().getItemIdAtPosition( listPosition );
+        // Cursor loads all Titles from flung album
+        Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null, MEDIA_FROM_ALBUM_SELECTION_STRING, new String[]{"" + itemID}, null);
+        Song[] songsFromAlbum = Song.extractSongsFromCursor(cursor);
+        cursor.close();
+
         return false;
     }
 
