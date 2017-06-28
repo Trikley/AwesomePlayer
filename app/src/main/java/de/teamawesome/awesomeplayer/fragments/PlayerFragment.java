@@ -255,6 +255,42 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
                     if(view!=null) {
                         EditText editText = (EditText) view.findViewById(R.id.Songtitle);
                         editText.setText(currentTitle, TextView.BufferType.EDITABLE);
+
+                        //Not-sure-if-working-Album-art-load-Prototype
+                        //get the current album art
+                        Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                                new String[] {MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                                MediaStore.Audio.Albums._ID+ "=?",
+                                new String[] {String.valueOf(getArguments().getStringArray(ListUtils.MEDIA_ALBUM_ID_IN_ORDER)[0])},
+                                null);
+
+                        if (cursor.moveToFirst()) {
+                            String albumPath = null;
+                            while(true) {
+                                //set current album art
+                                albumPath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+                                if (albumPath == null) {
+                                    if(cursor.moveToNext()) {
+                                        continue;
+                                    }else {
+                                        break;
+                                    }
+                                }else {
+                                    break;
+                                }
+                            }
+                            if(albumPath != null){
+                                File imgFile = new  File(albumPath);
+
+                                if(imgFile.exists()){
+                                    Bitmap myBitmap = BitmapFactory.decodeFile(albumPath);
+                                    ImageView myImage = (ImageView) view.findViewById(R.id.albumArt);
+                                    myImage.setImageBitmap(myBitmap);
+                                }
+                            }
+
+                        }
+
                     }
                 }
             }
