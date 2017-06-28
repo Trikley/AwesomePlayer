@@ -82,8 +82,8 @@ public class Song implements Parcelable{
             Song currentSong = new Song();
 
             currentSong.id = cursor.getString(cursor.getColumnIndex("_ID"));
-            currentSong.path = cursor.getString(cursor.getColumnIndex("DATA"));
-            currentSong.displayName = cursor.getString(cursor.getColumnIndex("DISPLAY_NAME"));
+            currentSong.path = cursor.getString(cursor.getColumnIndex("_DATA"));
+            currentSong.displayName = cursor.getString(cursor.getColumnIndex("_DISPLAY_NAME"));
             currentSong.title = cursor.getString(cursor.getColumnIndex("TITLE"));
             currentSong.duration = cursor.getString(cursor.getColumnIndex("DURATION"));
 
@@ -96,7 +96,7 @@ public class Song implements Parcelable{
 
             returnedSongs.add(currentSong);
         }
-        return (Song[]) returnedSongs.toArray();
+        return (Song[]) returnedSongs.toArray(new Song[0]);
     }
 
 
