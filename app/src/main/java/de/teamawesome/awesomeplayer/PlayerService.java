@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils;
+import de.teamawesome.awesomeplayer.model.Song;
 import de.teamawesome.awesomeplayer.playerserviceutils.IPlaybackListener;
 import de.teamawesome.awesomeplayer.playerserviceutils.MediaPlayerManager;
 import de.teamawesome.awesomeplayer.playerserviceutils.PlaybackQueueManager;
@@ -88,20 +89,20 @@ public class PlayerService extends Service {
     }
 
     public class PlayerBind extends Binder {
-        public void playSongWhenReady(String pathToSong) {
-            PlayerService.this.getPlaybackQueueManager().appendSong(pathToSong);
+        public void playSongWhenReady(Song song) {
+            PlayerService.this.getPlaybackQueueManager().appendSong(song);
         }
 
-        public void playAllSongsWhenReady(String[] pathToSongs) {
-            PlayerService.this.getPlaybackQueueManager().appendAllSongs(pathToSongs);
+        public void playAllSongsWhenReady(Song[] songs) {
+            PlayerService.this.getPlaybackQueueManager().appendAllSongs(songs);
         }
 
-        public void playSongDelayed(int amountOfSongsToDelay, String pathToSong) {
-            PlayerService.this.getPlaybackQueueManager().insertInPosition(amountOfSongsToDelay, pathToSong);
+        public void playSongDelayed(int amountOfSongsToDelay, Song song) {
+            PlayerService.this.getPlaybackQueueManager().insertInPosition(amountOfSongsToDelay, song);
         }
 
-        public void playSongNow(String pathToSong) {
-            PlayerService.this.getPlaybackQueueManager().insertInPosition(0, pathToSong);
+        public void playSongNow(Song song) {
+            PlayerService.this.getPlaybackQueueManager().insertInPosition(0, song);
             PlayerService.this.getMediaPlayerManager().stop();
         }
 
@@ -125,7 +126,7 @@ public class PlayerService extends Service {
             PlayerService.this.getPlaybackQueueManager().removeSongFromQueue(positionIndex);
         }
 
-        public List<String> returnPlayQueueAsList() {
+        public List<Song> returnPlayQueueAsList() {
             return PlayerService.this.getPlaybackQueueManager().returnListCopy();
         }
 
