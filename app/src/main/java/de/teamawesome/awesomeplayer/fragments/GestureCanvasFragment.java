@@ -72,6 +72,12 @@ public class GestureCanvasFragment extends Fragment {
 
         // The GestureDetector needed to handle the gesture recognition;
         private GestureDetector gestureDetector = new GestureDetector(getActivity(),this);
+        private final String SWIPE_RIGHT = "SWIPE_RIGHT"; /* Swipe from right to left */
+        private final String SWIPE_LEFT = "SWIPE_LEFT"; /* Swipe from left to right */
+        private final String CIRCLE_CLOCKWISE = "CIRCLE_CLOCKWISE";
+        private final String CIRCLE_COUNTERCLOCKWISE = "CIRCLE_COUNTERCLOCKWISE";
+        private final String Z_GESTURE = "Z_GESTURE";
+
 
         private GestureLibrary gestureLib;
         TouchProcessor(){
@@ -91,23 +97,57 @@ public class GestureCanvasFragment extends Fragment {
         @Override
         public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
             ArrayList<Prediction> predictions = gestureLib.recognize(gesture);
-            for (Prediction prediction : predictions) {
-                if (prediction.score > 2.0) {
-                    Log.d("GestureCanvas", "Gesture: " + prediction.name + " [" + prediction.score + "]");
+            //Find maximum prediction score
+            Prediction maxScorePrediction = predictions.get(0);
+            for (Prediction prediction : predictions) if (prediction.score > maxScorePrediction.score) maxScorePrediction = prediction;
+
+            if( maxScorePrediction != null && maxScorePrediction.score > 2.0)
+                switch (maxScorePrediction.name){
+                    case SWIPE_LEFT:
+                        Log.d("GestureCanvas", "Gesture recognized: '" + SWIPE_LEFT + "'");
+                        // Previous Song
+                        break;
+                    case SWIPE_RIGHT:
+                        Log.d("GestureCanvas", "Gesture recognized: '" + SWIPE_RIGHT + "'");
+                        // Next Song
+                        break;
+                    case CIRCLE_CLOCKWISE:
+                        Log.d("GestureCanvas", "Gesture recognized: '" + CIRCLE_CLOCKWISE + "'");
+                        // Forwards
+                        break;
+                    case CIRCLE_COUNTERCLOCKWISE:
+                        Log.d("GestureCanvas", "Gesture recognized: '" + CIRCLE_COUNTERCLOCKWISE + "'");
+                        // Backwards
+                        break;
+                    case Z_GESTURE:
+                        Log.d("GestureCanvas", "Gesture recognized: '" + Z_GESTURE + "'");
+                        // Toggle Shuffle
+                        break;
+                    default: Log.e("GestureCanvas", "Gesture name '" + maxScorePrediction.name + "' not specified!");
                 }
 
-            }
         }
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            Log.d("GestureCanvas", "ST");
+            Log.d("GestureCanvas", "SingleTap");
+            // Pause playback
             return super.onSingleTapConfirmed(e);
         }
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            Log.d("GestureCanvas", "Fling");
+
+            if(velocityY > 0) {
+                Log.d("GestureCanvas", "Fling down");
+                // Fling down
+                // Volume down
+            } else {
+                Log.d("GestureCanvas", "Fling up");
+                // Fling up
+                // Volume up
+            }
+
             return super.onFling(e1, e2, velocityX, velocityY);
         }
     }

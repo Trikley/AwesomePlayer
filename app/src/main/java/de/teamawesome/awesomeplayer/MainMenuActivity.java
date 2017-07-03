@@ -144,7 +144,7 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
 
             transaction.addToBackStack(null);
             transaction.commit();
-            Log.d("MainMenuActivity","onDoubleTap");
+            Log.d("MainMenuActivity","onLongPress");
         }
     }
 
