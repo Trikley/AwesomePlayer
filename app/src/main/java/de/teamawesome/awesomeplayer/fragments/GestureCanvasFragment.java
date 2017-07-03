@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -38,7 +37,6 @@ public class GestureCanvasFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_gesture_canvas, container, false);
-//        view.setOnTouchListener(new TouchProcessor());
         TouchProcessor touchProcessor = new TouchProcessor();
         view.findViewById(R.id.GestureView).setOnTouchListener(touchProcessor);
         ((GestureOverlayView)view.findViewById(R.id.GestureView)).addOnGesturePerformedListener(touchProcessor);
@@ -72,15 +70,18 @@ public class GestureCanvasFragment extends Fragment {
 
         // The GestureDetector needed to handle the gesture recognition;
         private GestureDetector gestureDetector = new GestureDetector(getActivity(),this);
+        /** All names defined by the raw data from res/raw/gesture.txt
+         *  which was created using the gesture building tool**/
         private final String SWIPE_RIGHT = "SWIPE_RIGHT"; /* Swipe from right to left */
         private final String SWIPE_LEFT = "SWIPE_LEFT"; /* Swipe from left to right */
         private final String CIRCLE_CLOCKWISE = "CIRCLE_CLOCKWISE";
         private final String CIRCLE_COUNTERCLOCKWISE = "CIRCLE_COUNTERCLOCKWISE";
         private final String Z_GESTURE = "Z_GESTURE";
 
-
         private GestureLibrary gestureLib;
+
         TouchProcessor(){
+            // Loads the raw file created from the gesture builder.
             gestureLib = GestureLibraries.fromRawResource(getActivity(), R.raw.gesture);
             gestureLib.load();
         }
@@ -96,11 +97,14 @@ public class GestureCanvasFragment extends Fragment {
 
         @Override
         public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
+            // Recognize custom gestures
             ArrayList<Prediction> predictions = gestureLib.recognize(gesture);
-            //Find maximum prediction score
+
+            // Find prediction with the maximum recognition score
             Prediction maxScorePrediction = predictions.get(0);
             for (Prediction prediction : predictions) if (prediction.score > maxScorePrediction.score) maxScorePrediction = prediction;
 
+            // Switch the according name and do action
             if( maxScorePrediction != null && maxScorePrediction.score > 2.0)
                 switch (maxScorePrediction.name){
                     case SWIPE_LEFT:
@@ -128,6 +132,7 @@ public class GestureCanvasFragment extends Fragment {
 
         }
 
+        // Gestures / Touch events NOT recognized via the gesture library
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             Log.d("GestureCanvas", "SingleTap");
