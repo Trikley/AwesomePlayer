@@ -1,27 +1,17 @@
 package de.teamawesome.awesomeplayer.fragments.listFragments;
 
 
-import android.app.ListFragment;
 import android.content.Loader;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ListView;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import de.teamawesome.awesomeplayer.model.Song;
-
-import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.MEDIA_ALBUM_ID_IN_ORDER;
-import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER;
-import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.MEDIA_DISPLAY_NAMES_IN_ORDER;
-import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.SELECTION_ARGS;
+import de.teamawesome.awesomeplayer.playerservice.PlayerBindManager;
 
 /**
  * A {@link CursorListFragment} used to display songs.
@@ -43,6 +33,12 @@ public class MediaListFragment extends CursorListFragment {
     protected boolean onSingleTap(MotionEvent e) {
         Bundle arguments = ListBundles.MEDIA_BUNDLE.get();
 
+        int listPosition= getListView().pointToPosition((int) e.getX(), (int) e.getY());
+        Song[] selectedSongs = Arrays.copyOfRange(currentSongs, listPosition, currentSongs.length);
+        PlayerBindManager manager = new PlayerBindManager(getActivity().getApplication());
+        manager.stop();
+        manager.playAllSongsWhenReady(selectedSongs);
+        manager.dispose();
         fragmentListener.onFragmentInteraction(arguments, this);
         // Returns false to enable correct animation.
         return false;

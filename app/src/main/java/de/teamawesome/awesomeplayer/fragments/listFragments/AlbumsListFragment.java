@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import de.teamawesome.awesomeplayer.model.Song;
-import de.teamawesome.awesomeplayer.playerserviceutils.PlayerBindManager;
+import de.teamawesome.awesomeplayer.playerservice.PlayerBindManager;
 
 /**
  * A {@link CursorListFragment} used to display albums.
