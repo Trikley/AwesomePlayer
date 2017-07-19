@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -16,6 +17,8 @@ import android.app.Fragment;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.os.IBinder;
+import android.text.Html;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +36,7 @@ import de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils;
 import de.teamawesome.awesomeplayer.playerserviceutils.IPlaybackListener;
 
 import static de.teamawesome.awesomeplayer.R.id.Songtitle;
+import static de.teamawesome.awesomeplayer.R.id.noAlbumCover;
 import static de.teamawesome.awesomeplayer.R.id.pause;
 import static de.teamawesome.awesomeplayer.R.id.play;
 import static de.teamawesome.awesomeplayer.R.id.albumArt;
@@ -255,6 +259,8 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
                     if(view!=null) {
                         EditText editText = (EditText) view.findViewById(R.id.Songtitle);
                         editText.setText(currentTitle, TextView.BufferType.EDITABLE);
+                        //Centers Song title
+                        editText.setGravity(Gravity.CENTER);
 
                         Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                                 new String[] {MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
@@ -284,7 +290,21 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
                                     Bitmap myBitmap = BitmapFactory.decodeFile(albumPath);
                                     ImageView myImage = (ImageView) view.findViewById(R.id.albumArt);
                                     myImage.setImageBitmap(myBitmap);
+
+                                    EditText editText1 = (EditText) view.findViewById(R.id.noAlbumCover);
+                                    editText1.setText("");
+
                                 }
+                            } else {
+
+                                //sets No Cover found Message
+                                EditText editText1 = (EditText) view.findViewById(R.id.noAlbumCover);
+                                editText1.setGravity(Gravity.CENTER);
+                                editText1.setText(Html.fromHtml("<small><i>" + "No Album Cover Found" + "</i></small>"));
+                                //editText1.setText("No Album Cover Found");
+
+
+
                             }
 
                         }

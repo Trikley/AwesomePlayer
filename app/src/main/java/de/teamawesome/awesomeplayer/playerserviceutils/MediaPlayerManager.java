@@ -9,6 +9,7 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import de.teamawesome.awesomeplayer.PlayerService;
+import de.teamawesome.awesomeplayer.model.Song;
 
 public class MediaPlayerManager implements Runnable {
 
@@ -67,20 +68,20 @@ public class MediaPlayerManager implements Runnable {
     }
 
 
-    private void startPlayingSong(String pathToSong){
+    private void startPlayingSong(Song song){
         //TODO Remove Toast
-        Toast.makeText(playerService.getApplicationContext(), "Playing: " + pathToSong, Toast.LENGTH_SHORT).show();
+        Toast.makeText(playerService.getApplicationContext(), "Playing: " + song.getTitle(), Toast.LENGTH_SHORT).show();
         stop();
 
         try {
-            mediaPlayer.setDataSource(pathToSong);
+            mediaPlayer.setDataSource(song.getPath());
             mediaPlayer.prepare();
             mediaPlayer.start();
             for(IPlaybackListener playbackListener: playbackListeners) {
-                playbackListener.newSongStartsPlaying(pathToSong);
+                playbackListener.newSongStartsPlaying(song);
             }
         }catch (IOException e) {
-            throw new IllegalArgumentException("The supplied Path as Argument " + pathToSong + " is invalid!", e);
+            throw new IllegalArgumentException("The Path to the song (" + song.getTitle() + " Path: " + song.getPath() + ") supplied as Argument " + " is invalid!", e);
         }
     }
 
