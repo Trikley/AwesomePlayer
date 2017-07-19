@@ -1,49 +1,37 @@
 package de.teamawesome.awesomeplayer.fragments;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.File;
-import java.util.Arrays;
 
-import de.teamawesome.awesomeplayer.PlayerService;
+import de.teamawesome.awesomeplayer.playerservice.PlayerBindManager;
 import de.teamawesome.awesomeplayer.R;
-import de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils;
-import de.teamawesome.awesomeplayer.playerserviceutils.IPlaybackListener;
+import de.teamawesome.awesomeplayer.model.Song;
+import de.teamawesome.awesomeplayer.playerservice.IPlaybackListener;
 
-import static de.teamawesome.awesomeplayer.R.id.Songtitle;
-import static de.teamawesome.awesomeplayer.R.id.pause;
-import static de.teamawesome.awesomeplayer.R.id.play;
-import static de.teamawesome.awesomeplayer.R.id.albumArt;
-
-public class PlayerFragment extends Fragment implements ServiceConnection, IPlaybackListener{
+public class PlayerFragment extends Fragment implements IPlaybackListener{
 
     private FragmentListener fListener;
-    private String currentTitle = " ";
 
-    private PlayerService.PlayerBind playerBind = null;
+    private PlayerBindManager playerBindMgr;
     private boolean playerServiceBound = false;
+
+    private ProgressBar progressBar;
 
     public PlayerFragment() {
         // Required empty public constructor
@@ -60,7 +48,7 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
     public void onResume() {
         super.onResume();
         if(!playerServiceBound) {
-            bindToPlayerService();
+            createPlayerBindManager();
         }
     }
 
@@ -68,7 +56,7 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
     public void onPause() {
         super.onPause();
         if(playerServiceBound) {
-            unbindFromPlayerService();
+            disposeOfPlayerBindManager();
         }
     }
 
@@ -85,51 +73,107 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
         // set the current Title
         View view = inflater.inflate(R.layout.activity_screen_ii, container, false);
 
+        resetAlbumCover(view);
+        EditText editText = (EditText) view.findViewById(R.id.Songtitle);
+        editText.setText("", TextView.BufferType.EDITABLE);
+
         //mapping functions to Buttons
         //Pause Button
         Button pauseButton = (Button)view.findViewById(R.id.pause);
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(playerBind != null) {
-                    playerBind.pause();
+                if(playerBindMgr != null) {
+                    playerBindMgr.pause();
                 }
             }
         });
 
         //Stop Button
-        Button StopButton = (Button)view.findViewById(R.id.stop);
-        StopButton.setOnClickListener(new View.OnClickListener() {
+        Button stopButton = (Button)view.findViewById(R.id.stop);
+        stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(playerBind != null) {
-                    playerBind.clearPlayQueue();
-                    playerBind.stop();
+                if(playerBindMgr != null) {
+                    playerBindMgr.stop();
                 }
             }
         });
 
         //Play Button
-        Button PlayButton = (Button)view.findViewById(R.id.play);
-        PlayButton.setOnClickListener(new View.OnClickListener() {
+        Button playButton = (Button)view.findViewById(R.id.play);
+        playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(playerBind != null) {
-                    playerBind.resume();
+                if(playerBindMgr != null) {
+                    playerBindMgr.resume();
+                }
+            }
+        });
+
+        //Previous Button
+        Button previousButton = (Button)view.findViewById(R.id.previous);
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(playerBindMgr != null) {
+                    playerBindMgr.previous();
                 }
             }
         });
 
         //Next Button
-        Button NextButton = (Button)view.findViewById(R.id.next);
-        NextButton.setOnClickListener(new View.OnClickListener() {
+        Button nextButton = (Button)view.findViewById(R.id.next);
+        nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(playerBind != null) {
-                    playerBind.stop();
+                if(playerBindMgr != null) {
+                    playerBindMgr.next();
                 }
             }
         });
+
+        //Repeat Button
+        Button repeatButton = (Button)view.findViewById(R.id.repeat);
+        repeatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(playerBindMgr != null && playerBindMgr.isBound()) {
+                    if(playerBindMgr.returnRepeatMode()) {
+                        playerBindMgr.setLoopingMode(false);
+                    }else {
+                        playerBindMgr.setLoopingMode(true);
+                    }
+                }
+            }
+        });
+
+        //Backwards Button
+        Button backwardsButton = (Button)view.findViewById(R.id.backwards);
+        backwardsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(playerBindMgr != null && playerBindMgr.isBound()) {
+                    playerBindMgr.jump10SecondsBackward();
+                }
+            }
+        });
+
+        //Forwards Button
+        Button forwardsButton = (Button)view.findViewById(R.id.forwards);
+        forwardsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(playerBindMgr != null && playerBindMgr.isBound()) {
+                    playerBindMgr.jump10SecondsForward();
+                }
+            }
+        });
+
+        //ProgressBar
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBarSong);
+        progressBar.setProgress(0);
+
 
 
 
@@ -174,6 +218,12 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        progressBar = null;
+    }
+
     /**
      * onAttach and onDetach are used to handle the assignment of 'fragmentListener'.
      * ignore the deprecated warning, since the target version of android is 4.1 we cannot
@@ -196,73 +246,49 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
         fListener = null;
     }
 
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        playerBind = (PlayerService.PlayerBind) service;
-        playerServiceBound = true;
-        String[] pathToSongs = getArguments().getStringArray(ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER);
-        if(pathToSongs != null && pathToSongs.length>0) {
-            playerBind.clearPlayQueue();
-            playerBind.stop();
-            playerBind.playSongNow(pathToSongs[0]);
-            for (int i = 1; i < pathToSongs.length; i++) {
-                playerBind.playSongWhenReady(pathToSongs[i]);
+    private void createPlayerBindManager() {
+        playerBindMgr = new PlayerBindManager(this.getActivity().getApplication());
+        playerBindMgr.addPlaybackListener(this);
+    }
 
-            }
+    private void disposeOfPlayerBindManager() {
+        playerBindMgr.dispose();
+        playerBindMgr = null;
+    }
+
+    private void resetAlbumCover(View view) {
+        if(view!=null) {
+            ImageView myImage = (ImageView) view.findViewById(R.id.albumArt);
+            myImage.setImageDrawable(getActivity().getResources().getDrawable( R.drawable.default_album_cover));
         }
-        playerBind.addPlaybackListener(this);
     }
 
     @Override
-    public void onServiceDisconnected(ComponentName name) {
-        playerBind.removePlaybackListener(this);
-        playerBind = null;
-        playerServiceBound = false;
-
-    }
-
-    private void bindToPlayerService() {
-        Intent playerServiceIntent = new Intent(getActivity().getApplication(), PlayerService.class);
-        System.out.println("Service started: " + getActivity().getApplication().startService(playerServiceIntent));
-        System.out.println("Service bound? " + getActivity().getApplication().bindService(playerServiceIntent , this, 0));
-        playerServiceBound = true;
-    }
-
-    private void unbindFromPlayerService() {
-        getActivity().getApplication().unbindService(this);
-        playerBind = null;
-        playerServiceBound = false;
+    public void playerBindManagerFinishedBinding(PlayerBindManager pbm) {
+        if(progressBar!=null) {
+            progressBar.setMax(pbm.returnCurrentSongDuration());
+        }
     }
 
     @Override
-    public void newSongStartsPlaying(final String pathToSong) {
+    public void newSongStartsPlaying(final Song song) {
         new android.os.Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                String[] songNames = getArguments().getStringArray(ListUtils.MEDIA_DISPLAY_NAMES_IN_ORDER);
-                String[] paths = getArguments().getStringArray(ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER);
-                if(songNames!=null && songNames.length>0 && paths.length >0 && paths != null) {
-                    int indexOfPath = Arrays.asList(paths).indexOf(pathToSong);
-                    if(indexOfPath<songNames.length && indexOfPath>=0) {
-                        currentTitle = songNames[indexOfPath];
-                    }else {
-                        //TODO Do something useful here!
-                        currentTitle = "ERROR";
-                    }
-
-
+                boolean success = false;
+                if(song!=null) {
                     View view = getView();
                     if(view!=null) {
                         EditText editText = (EditText) view.findViewById(R.id.Songtitle);
-                        editText.setText(currentTitle, TextView.BufferType.EDITABLE);
+                        editText.setText(song.getTitle(), TextView.BufferType.EDITABLE);
 
                         Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                                 new String[] {MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
                                 MediaStore.Audio.Albums._ID+ "=?",
-                                new String[] {String.valueOf(getArguments().getStringArray(ListUtils.MEDIA_ALBUM_ID_IN_ORDER)[0])},
+                                new String[] {song.getAlbumID()},
                                 null);
 
-                        if (cursor.moveToFirst()) {
+                        if (cursor!=null && cursor.moveToFirst()) {
                             String albumPath = null;
                             while(true) {
                                 //set current album art
@@ -277,6 +303,7 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
                                     break;
                                 }
                             }
+                            cursor.close();
                             if(albumPath != null){
                                 File imgFile = new  File(albumPath);
 
@@ -284,14 +311,50 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
                                     Bitmap myBitmap = BitmapFactory.decodeFile(albumPath);
                                     ImageView myImage = (ImageView) view.findViewById(R.id.albumArt);
                                     myImage.setImageBitmap(myBitmap);
+                                    success = true;
                                 }
                             }
 
                         }
-
+                        if(!success) {
+                            resetAlbumCover(view);
+                        }
                     }
+                }
+
+            }
+        });
+    }
+
+    @Override
+    public void playbackPaused() {
+        //TODO something useful!
+    }
+
+    @Override
+    public void playbackResumed() {
+        //TODO something useful!
+    }
+
+    @Override
+    public void playbackStopped() {
+        new android.os.Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                View view = getView();
+                if(view != null) {
+                    resetAlbumCover(view);
+                    EditText editText = (EditText) view.findViewById(R.id.Songtitle);
+                    editText.setText("", TextView.BufferType.EDITABLE);
+                    progressBar = (ProgressBar) view.findViewById(R.id.progressBarSong);
+                    progressBar.setProgress(0);
                 }
             }
         });
+    }
+
+    @Override
+    public void volumeChanged(int newVolume) {
+        //TODO something useful!
     }
 }
