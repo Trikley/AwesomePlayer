@@ -137,15 +137,19 @@ public class PlayerService extends Service {
         void backward() {
             Song last = PlayerService.this.getPlaybackQueueManager().popSongFormBackStack();
             Song current = PlayerService.this.returnMediaPlayerManager().getCurrentSong();
-            if(last!=null) {
-                PlayerService.this.getPlaybackQueueManager().insertInPosition(0, last);
-            }else {
+            if(last == null) {
                 return;
             }
             if(current!=null) {
                 PlayerService.this.getPlaybackQueueManager().insertInPosition(0, PlayerService.this.returnMediaPlayerManager().getCurrentSong());
             }
-            PlayerService.this.returnMediaPlayerManager().stopCurrentSong(false);
+
+            PlayerService.this.getPlaybackQueueManager().insertInPosition(0, last);
+
+            if(current!=null) {
+                PlayerService.this.returnMediaPlayerManager().stopCurrentSong(false);
+            }
+
         }
 
         void setLoopingMode(boolean newMode) {

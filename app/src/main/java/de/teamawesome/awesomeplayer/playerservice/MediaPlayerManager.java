@@ -3,7 +3,6 @@ package de.teamawesome.awesomeplayer.playerservice;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -14,12 +13,16 @@ import de.teamawesome.awesomeplayer.model.Song;
 
 class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompletionListener{
 
+    private long timestampLastAction;
+    private static long idletimeTillQueueCheck = 500;
+
     private PlaybackQueueManager playManager;
     private PlayerService playerService;
 
     private boolean paused;
     private Handler handler;
     private boolean prepared;
+    private boolean finishingUp;
 
     private Queue<IPlaybackListener> playbackListeners;
     private MediaPlayer mediaPlayer;
@@ -35,10 +38,13 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
         paused = false;
         prepared = false;
         quit = false;
+        finishingUp = false;
 
         playbackListeners = new LinkedBlockingQueue<>();
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setOnCompletionListener(this);
+
+        timestampLastAction = 0;
     }
 
 
@@ -59,27 +65,20 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
     private void startPlayingSong(final Song song){
         //TODO Remove Toast
         Toast.makeText(playerService.getApplicationContext(), "Playing: " + song.getTitle(), Toast.LENGTH_SHORT).show();
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    currentSong = song;
-                    mediaPlayer.reset();
-                    mediaPlayer.setDataSource(song.getPath());
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                    for(IPlaybackListener playbackListener: playbackListeners) {
-                        playbackListener.newSongStartsPlaying(song);
-                    }
-                }catch (IOException e) {
-                    throw new IllegalArgumentException("The Path to the song (" +
-                            song.getTitle() + " Path: " + song.getPath() +
-                            ") supplied as Argument is invalid!", e);
-                }
+        try {
+            timestampLastAction = System.currentTimeMillis();
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(song.getPath());
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            for(IPlaybackListener playbackListener: playbackListeners) {
+                playbackListener.newSongStartsPlaying(song);
             }
-        });
-
+        }catch (IOException e) {
+            throw new IllegalArgumentException("The Path to the song (" +
+                    song.getTitle() + " Path: " + song.getPath() +
+                    ") supplied as Argument is invalid!", e);
+        }
     }
 
     void stopPlayback() {
@@ -90,8 +89,9 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
         handler.post(new Runnable() {
             @Override
             public void run() {
+                timestampLastAction = System.currentTimeMillis();
                 mediaPlayer.reset();
-                onSongComplete(false);
+                finishSong(false);
             }
         });
     }
@@ -101,8 +101,9 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
         handler.post(new Runnable() {
             @Override
             public void run() {
+                timestampLastAction = System.currentTimeMillis();
                 mediaPlayer.reset();
-                onSongComplete(putToBackstack);
+                finishSong(putToBackstack);
             }
         });
     }
@@ -112,6 +113,7 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    timestampLastAction = System.currentTimeMillis();
                     mediaPlayer.pause();
                     paused = true;
                 }
@@ -127,6 +129,7 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    timestampLastAction = System.currentTimeMillis();
                     mediaPlayer.start();
                     paused = false;
                 }
@@ -141,6 +144,7 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
         handler.post(new Runnable() {
             @Override
             public void run() {
+                timestampLastAction = System.currentTimeMillis();
                 mediaPlayer.setLooping(true);
             }
         });
@@ -151,6 +155,7 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    timestampLastAction = System.currentTimeMillis();
                     mediaPlayer.seekTo(millis);
                 }
             });
@@ -190,20 +195,26 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        onSongComplete(true);
+        finishSong(true);
     }
 
-    private void onSongComplete(boolean inBackstack) {
+    private void finishSong(boolean inBackstack) {
+        if(finishingUp) {
+            return;
+        }
         if(currentSong!=null && inBackstack) {
             playManager.addSongToBackStack(currentSong);
         }
         final Song next = playManager.pollSongFromPlayQueue();
         currentSong = next;
         if(next!=null) {
+            finishingUp = true;
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    timestampLastAction = System.currentTimeMillis();
                     startPlayingSong(next);
+                    finishingUp = false;
                 }
             });
         }else {
@@ -237,9 +248,11 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(!(mediaPlayer.isPlaying() || paused)) {
-                    if(playManager.returnQueueLength()>0) {
-                        onSongComplete(false);
+                if(System.currentTimeMillis()-timestampLastAction>idletimeTillQueueCheck) {
+                    if (!(mediaPlayer.isPlaying() || paused)) {
+                        if (playManager.returnQueueLength() > 0) {
+                            finishSong(false);
+                        }
                     }
                 }
                 putPlayQueueCheckInLooper();
