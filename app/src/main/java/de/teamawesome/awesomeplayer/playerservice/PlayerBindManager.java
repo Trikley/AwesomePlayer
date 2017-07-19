@@ -312,6 +312,20 @@ public class PlayerBindManager implements ServiceConnection{
         }
     }
 
+    public void shufflePlayQueue() throws IllegalStateException {
+        disposeCheck();
+        if (isBound()) {
+            playerBind.shufflePlayQueue();
+        } else {
+            queuedActions.add(new Runnable() {
+                @Override
+                public void run() {
+                    PlayerBindManager.this.playerBind.shufflePlayQueue();
+                }
+            });
+        }
+    }
+
     public void setPlaybackPosition(int millis) throws IllegalStateException{
         disposeCheck();
         if(!isBound()) {

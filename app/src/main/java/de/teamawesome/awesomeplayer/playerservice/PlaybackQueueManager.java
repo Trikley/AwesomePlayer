@@ -2,6 +2,7 @@ package de.teamawesome.awesomeplayer.playerservice;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.LinkedList;
 import java.util.List;
@@ -96,6 +97,16 @@ class PlaybackQueueManager {
         }
         stackLock.unlock();
         return result;
+    }
+
+    void shufflePlayQueue() {
+        queueLock.lock();
+        List<Song> playQueueAsList = new ArrayList<>(playQueue.size());
+        playQueueAsList.addAll(playQueue);
+        Collections.shuffle(playQueueAsList);
+        playQueue.clear();
+        playQueue.addAll(playQueueAsList);
+        queueLock.unlock();
     }
 
     int returnQueueLength() {

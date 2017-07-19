@@ -152,6 +152,10 @@ public class PlayerService extends Service {
 
         }
 
+        void shufflePlayQueue() {
+            PlayerService.this.getPlaybackQueueManager().shufflePlayQueue();
+        }
+
         void setLoopingMode(boolean newMode) {
             PlayerService.this.returnMediaPlayerManager().setLoopingMode(newMode);
         }

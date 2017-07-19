@@ -133,16 +133,16 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
             }
         });
 
-        //Repeat Button
-        Button repeatButton = (Button)view.findViewById(R.id.repeat);
-        repeatButton.setOnClickListener(new View.OnClickListener() {
+        //Shuffle Button
+        Button shuffleButton = (Button)view.findViewById(R.id.shuffle);
+        shuffleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(playerBindMgr != null && playerBindMgr.isBound()) {
                     if(playerBindMgr.returnRepeatMode()) {
-                        playerBindMgr.setLoopingMode(false);
+                        playerBindMgr.shufflePlayQueue();
                     }else {
-                        playerBindMgr.setLoopingMode(true);
+                        playerBindMgr.shufflePlayQueue();
                     }
                 }
             }
