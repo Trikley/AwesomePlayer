@@ -66,17 +66,17 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
      */
     @Override
     public void onFragmentInteraction(Bundle arguments, Object caller) {
-        if(caller instanceof MediaListFragment){
+        if (caller instanceof MediaListFragment) {
             replaceMainFragment(new PlayerFragment(), arguments);
         }
-        if(caller instanceof AlbumsListFragment){
+        if (caller instanceof AlbumsListFragment) {
             replaceMainFragment(new MediaListFragment(), arguments);
         }
-        if(caller instanceof PlaylistsListFragment){
+        if (caller instanceof PlaylistsListFragment) {
             replaceMainFragment(new MediaListFragment(), arguments);
         }
-    }
 
+    }
     /**
      * Handles interactions with hard-coded Buttons.
      * Interactions should only result in layout changes (e.g. replacing a CursorListFragment).
@@ -97,6 +97,13 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
                 replaceMainFragment(new PlaylistsListFragment(), ListBundles.PLAYLIST_BUNDLE.get());
                 break;
             default: break;
+        }
+    }
+
+    @Override
+    public void displayFragment(Bundle arguments, Class desiredFragment) {
+        if(desiredFragment == PlaylistsListFragment.class){
+            replaceMainFragment(new PlaylistsListFragment(), arguments);
         }
     }
 

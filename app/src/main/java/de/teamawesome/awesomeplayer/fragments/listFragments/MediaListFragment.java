@@ -16,6 +16,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import de.teamawesome.awesomeplayer.fragments.FragmentListener;
 import de.teamawesome.awesomeplayer.model.Song;
 
 import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.MEDIA_ALBUM_ID_IN_ORDER;
@@ -36,6 +37,13 @@ public class MediaListFragment extends CursorListFragment {
         long itemID = getListView().getItemIdAtPosition( listPosition );
 
         //Log.d("FLING","Fling-position -- " + listPosition );
+
+        //opens Playlistview and adds the flung song to a chosen playlist
+        Bundle arguments = ListBundles.PLAYLIST_BUNDLE.get();
+        arguments.putParcelable("KeyCurrentSong", currentSongs[listPosition]);
+        arguments.putBundle("SongsBundle", this.getArguments());
+        fragmentListener.displayFragment(arguments, PlaylistsListFragment.class);
+
         return false;
     }
 
@@ -54,3 +62,4 @@ public class MediaListFragment extends CursorListFragment {
         currentSongs = Song.extractSongsFromCursor(data);
     }
 }
+

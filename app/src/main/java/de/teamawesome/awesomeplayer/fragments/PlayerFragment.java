@@ -33,6 +33,7 @@ import java.util.Arrays;
 import de.teamawesome.awesomeplayer.PlayerService;
 import de.teamawesome.awesomeplayer.R;
 import de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils;
+import de.teamawesome.awesomeplayer.model.Song;
 import de.teamawesome.awesomeplayer.playerserviceutils.IPlaybackListener;
 
 import static de.teamawesome.awesomeplayer.R.id.Songtitle;
@@ -202,7 +203,7 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        playerBind = (PlayerService.PlayerBind) service;
+        /**playerBind = (PlayerService.PlayerBind) service;
         playerServiceBound = true;
         String[] pathToSongs = getArguments().getStringArray(ListUtils.MEDIA_DATA_IN_PLAYBACK_ORDER);
         if(pathToSongs != null && pathToSongs.length>0) {
@@ -215,6 +216,7 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
             }
         }
         playerBind.addPlaybackListener(this);
+         **/
     }
 
     @Override
@@ -239,7 +241,7 @@ public class PlayerFragment extends Fragment implements ServiceConnection, IPlay
     }
 
     @Override
-    public void newSongStartsPlaying(final String pathToSong) {
+    public void newSongStartsPlaying(final Song pathToSong) {
         new android.os.Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {

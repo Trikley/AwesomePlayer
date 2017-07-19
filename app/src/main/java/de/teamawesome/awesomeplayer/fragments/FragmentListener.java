@@ -12,14 +12,18 @@ import android.view.MotionEvent;
 public interface FragmentListener {
     /**
      * Used to trigger Interactions
+     *
      * @param arguments This Bundle can be hold additional interaction information.
-     * @param caller Should always be referencing the calling object.
+     * @param caller    Should always be referencing the calling object.
      */
     public void onFragmentInteraction(Bundle arguments, Object caller);
 
     /**
      * Should be called when a button with a specified id is clicked.
+     *
      * @param id The clicked button's id.
      */
     public void onFragmentButtonClick(int id);
+
+    public void displayFragment(Bundle arguments, Class desiredFragment);
 }
