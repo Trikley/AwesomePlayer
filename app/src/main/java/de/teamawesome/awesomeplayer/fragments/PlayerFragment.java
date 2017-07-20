@@ -31,7 +31,6 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
     private FragmentListener fListener;
 
     private PlayerBindManager playerBindMgr;
-    private boolean playerServiceBound = false;
 
     private ProgressBar progressBar;
 
@@ -49,7 +48,7 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
     @Override
     public void onResume() {
         super.onResume();
-        if(!playerServiceBound) {
+        if(playerBindMgr == null) {
             createPlayerBindManager();
         }
     }
@@ -57,7 +56,7 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
     @Override
     public void onPause() {
         super.onPause();
-        if(playerServiceBound) {
+        if(playerBindMgr != null) {
             disposeOfPlayerBindManager();
         }
     }
