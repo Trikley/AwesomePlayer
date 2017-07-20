@@ -8,6 +8,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import de.teamawesome.awesomeplayer.fragments.FragmentListener;
+
 /**
  * This class can be used to implement a swipeable button like the one on top of all screens.
  */
@@ -55,6 +57,10 @@ public class SwipeButton extends android.support.v7.widget.AppCompatButton {
         setOnTouchListener(new TouchProcessor());
     }
 
+    private void onFlingDown(){
+        ((FragmentListener) attachedActivity).onFragmentInteraction(null,this);
+    }
+
     /**
      * This class handles the Touch events.
      * It handles all fling events and triggers the activities onTouchMethod to catch long presses.
@@ -72,10 +78,10 @@ public class SwipeButton extends android.support.v7.widget.AppCompatButton {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             // If Fling goes down and is fast enough
-            if( velocityY > 1){
-                //Do transaction
+            if( velocityY < 1 || attachedActivity instanceof FragmentListener){
+                onFlingDown();
             }
-            Log.d("SwipeButton","onFling");
+            Log.d("SwipeButton","onFling " + velocityX + " " + velocityY);
             return true;
         }
 
