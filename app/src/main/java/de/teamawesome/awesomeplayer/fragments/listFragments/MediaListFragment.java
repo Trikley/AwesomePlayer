@@ -26,6 +26,14 @@ public class MediaListFragment extends CursorListFragment {
         long itemID = getListView().getItemIdAtPosition( listPosition );
 
         //Log.d("FLING","Fling-position -- " + listPosition );
+
+        //opens Playlistview and adds the flung song to a chosen playlist
+        Bundle arguments = ListBundles.PLAYLIST_BUNDLE.get();
+        arguments.putParcelable("KeyCurrentSong", currentSongs[listPosition]);
+        arguments.putBundle("SongsBundle", this.getArguments());
+        fragmentListener.displayFragment(arguments, PlaylistsListFragment.class);
+
+
         return false;
     }
 

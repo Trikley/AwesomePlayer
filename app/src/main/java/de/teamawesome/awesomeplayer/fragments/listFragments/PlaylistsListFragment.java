@@ -1,5 +1,6 @@
 package de.teamawesome.awesomeplayer.fragments.listFragments;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -43,14 +44,30 @@ public class PlaylistsListFragment extends CursorListFragment {
      */
     @Override
     protected boolean onSingleTap(MotionEvent e) {
-        Bundle arguments = ListBundles.MEDIA_FROM_PLAYLIST_BUNDLE.get();
+//        Bundle arguments = ListBundles.MEDIA_FROM_PLAYLIST_BUNDLE.get();
+
         // The tapped item's position in the list ( 0 based ).
         int listPosition= getListView().pointToPosition((int) e.getX(), (int) e.getY());
         // The tapped item's id which can be used to querry for data from the MediaStore.
         long itemID = getListView().getItemIdAtPosition( listPosition );
-        arguments.putString(URI, MediaStore.Audio.Playlists.Members.getContentUri("external", itemID).toString());
 
-        fragmentListener.onFragmentInteraction(arguments, this);
+//        arguments.putString(URI, MediaStore.Audio.Playlists.Members.getContentUri("external", itemID).toString());
+//        fragmentListener.onFragmentInteraction(arguments, this);
+
+        //adds Song to playlist
+        if(this.getArguments().containsKey("KeyCurrentSong")){
+            Song song = this.getArguments().getParcelable("KeyCurrentSong");
+            ContentValues cV = new ContentValues();
+            cV.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, 0);
+            cV.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, song.getId());
+            getActivity().getContentResolver().insert(MediaStore.Audio.Playlists.Members.getContentUri("external", itemID), cV);
+            fragmentListener.onFragmentInteraction(this.getArguments().getBundle("SongsBundle"), this);
+        } else {
+            //directs back to Songlist
+            Bundle arguments = ListBundles.MEDIA_FROM_PLAYLIST_BUNDLE.get();
+            arguments.putString(URI, MediaStore.Audio.Playlists.Members.getContentUri("external", itemID).toString());
+            fragmentListener.onFragmentInteraction(arguments, this);
+        }
 
         // Returns false to enable correct animation.
         return false;
