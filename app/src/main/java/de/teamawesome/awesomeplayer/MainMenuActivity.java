@@ -95,6 +95,13 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
             default: break;
         }
     }
+    @Override
+    public void displayFragment(Bundle arguments, Class desiredFragment) {
+        if(desiredFragment == PlaylistsListFragment.class){
+            replaceMainFragment(new PlaylistsListFragment(), arguments);
+        }
+    }
+
 
     /**
      * Replaces the main fragment with given new fragment set up with given arguments.
