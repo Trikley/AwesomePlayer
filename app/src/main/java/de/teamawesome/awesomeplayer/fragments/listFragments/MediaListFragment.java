@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
 
 import java.util.Arrays;
 import java.util.List;
@@ -58,3 +59,4 @@ public class MediaListFragment extends CursorListFragment {
         currentSongs = Song.extractSongsFromCursor(data);
     }
 }
+
