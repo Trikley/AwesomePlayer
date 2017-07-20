@@ -22,4 +22,6 @@ public interface FragmentListener {
      * @param id The clicked button's id.
      */
     public void onFragmentButtonClick(int id);
+
+    public void displayFragment(Bundle arguments, Class desiredFragment);
 }

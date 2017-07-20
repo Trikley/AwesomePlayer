@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +27,14 @@ public class MediaListFragment extends CursorListFragment {
         long itemID = getListView().getItemIdAtPosition( listPosition );
 
         //Log.d("FLING","Fling-position -- " + listPosition );
+
+        //opens Playlistview and adds the flung song to a chosen playlist
+        Bundle arguments = ListBundles.PLAYLIST_BUNDLE.get();
+        arguments.putParcelable("KeyCurrentSong", currentSongs[listPosition]);
+        arguments.putBundle("SongsBundle", this.getArguments());
+        fragmentListener.displayFragment(arguments, PlaylistsListFragment.class);
+
+
         return false;
     }
 
@@ -50,3 +59,4 @@ public class MediaListFragment extends CursorListFragment {
         currentSongs = Song.extractSongsFromCursor(data);
     }
 }
+
