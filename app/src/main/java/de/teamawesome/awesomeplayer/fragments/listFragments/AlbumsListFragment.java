@@ -27,6 +27,9 @@ public class AlbumsListFragment extends de.teamawesome.awesomeplayer.fragments.l
     protected boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         // The tapped item's position in the list ( 0 based ).
         int listPosition= getListView().pointToPosition((int) e1.getX(), (int) e1.getY());
+
+        if(listPosition == -1) return false;
+
         // The tapped item's id which can be used to querry for data from the MediaStore.
         long itemID = getListView().getItemIdAtPosition( listPosition );
         // Cursor loads all Titles from flung album
@@ -50,6 +53,9 @@ public class AlbumsListFragment extends de.teamawesome.awesomeplayer.fragments.l
         Bundle arguments = de.teamawesome.awesomeplayer.fragments.listFragments.ListBundles.MEDIA_FROM_ALBUM_BUNDLE.get();
         // The tapped item's position in the list ( 0 based ).
         int listPosition= getListView().pointToPosition((int) e.getX(), (int) e.getY());
+
+        if(listPosition == -1) return false;
+
         // The tapped item's id which can be used to querry for data from the MediaStore.
         long itemID = getListView().getItemIdAtPosition( listPosition );
         arguments.putStringArray(SELECTION_ARGS, new String[]{"" + itemID});

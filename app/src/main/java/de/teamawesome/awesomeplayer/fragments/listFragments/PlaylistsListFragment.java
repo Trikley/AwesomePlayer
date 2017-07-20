@@ -44,6 +44,9 @@ public class PlaylistsListFragment extends CursorListFragment {
     protected boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         // The tapped item's position in the list ( 0 based ).
         int listPosition= getListView().pointToPosition((int) e1.getX(), (int) e2.getY());
+
+        if(listPosition == -1) return false;
+
         // The tapped item's id which can be used to querry for data from the MediaStore.
         long itemID = getListView().getItemIdAtPosition( listPosition );
         // Cursor loads all Titles from flung playlist
@@ -65,6 +68,9 @@ public class PlaylistsListFragment extends CursorListFragment {
 
         // The tapped item's position in the list ( 0 based ).
         int listPosition= getListView().pointToPosition((int) e.getX(), (int) e.getY());
+
+        if(listPosition == -1) return false;
+
         // The tapped item's id which can be used to querry for data from the MediaStore.
         long itemID = getListView().getItemIdAtPosition( listPosition );
 

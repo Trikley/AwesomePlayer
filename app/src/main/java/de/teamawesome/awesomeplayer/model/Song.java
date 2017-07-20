@@ -78,6 +78,10 @@ public class Song implements Parcelable{
 
     public static Song[] extractSongsFromCursor(Cursor cursor){
         ArrayList<Song> returnedSongs = new ArrayList<Song>();
+        // resets the cursor to position 0 (The position in front of the first element!)
+        cursor.moveToFirst();
+        // moves the cursor to the first element.
+        cursor.moveToPrevious();
         while(cursor.moveToNext()){
             Song currentSong = new Song();
 
