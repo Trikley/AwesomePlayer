@@ -6,10 +6,8 @@ import android.view.MotionEvent;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.View;
 
 import java.util.Arrays;
-import java.util.List;
 
 import de.teamawesome.awesomeplayer.model.Song;
 import de.teamawesome.awesomeplayer.playerservice.PlayerBindManager;

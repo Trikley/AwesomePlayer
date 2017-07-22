@@ -8,7 +8,6 @@ import android.gesture.GestureOverlayView;
 import android.gesture.Prediction;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
