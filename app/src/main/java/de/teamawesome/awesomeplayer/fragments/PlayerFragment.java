@@ -34,6 +34,10 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
 
     private ProgressBar progressBar;
 
+    private boolean shown;
+    private Song currentlyDisplayedSong;
+    private long timestampLastCheckOnDisplay;
+
     public PlayerFragment() {
         // Required empty public constructor
     }
@@ -41,8 +45,8 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // get the current title
-
+        currentlyDisplayedSong = null;
+        timestampLastCheckOnDisplay = 0;
     }
 
     @Override
@@ -51,6 +55,8 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
         if(playerBindMgr == null) {
             createPlayerBindManager();
         }
+        shown = true;
+        periodicCheckOfDisplayedInformation();
     }
 
     @Override
@@ -59,6 +65,7 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
         if(playerBindMgr != null) {
             disposeOfPlayerBindManager();
         }
+        shown = false;
     }
 
     @Override
@@ -74,9 +81,11 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
         // set the current Title
         View view = inflater.inflate(R.layout.activity_screen_ii, container, false);
 
+        TextView songtitleText = (TextView) view.findViewById(R.id.Songtitle);
+        songtitleText.setText("", TextView.BufferType.NORMAL);
+        TextView noAlbumCover = (TextView) view.findViewById(R.id.noAlbumCover);
+        noAlbumCover.setText("", TextView.BufferType.NORMAL);
         resetAlbumCover(view);
-        EditText editText = (EditText) view.findViewById(R.id.Songtitle);
-        editText.setText("", TextView.BufferType.EDITABLE);
 
         //mapping functions to Buttons
         //Pause Button
@@ -283,88 +292,149 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
         if(view!=null) {
             ImageView myImage = (ImageView) view.findViewById(R.id.albumArt);
             myImage.setImageDrawable(getActivity().getResources().getDrawable( R.drawable.default_album_cover));
-            EditText noAlbumCover =  (EditText) view.findViewById(R.id.noAlbumCover);
+            TextView noAlbumCover =  (TextView) view.findViewById(R.id.noAlbumCover);
             noAlbumCover.setText("No Album Cover available!", TextView.BufferType.NORMAL);
             noAlbumCover.setGravity(Gravity.CENTER);
         }
     }
 
-    @Override
-    public void playerBindManagerFinishedBinding(PlayerBindManager pbm) {
+    private void updateDisplayedInformation(final Song pSong) {
+        new android.os.Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if(shown) {
+                    Song song = null;
+                    if (pSong != null) {
+                        song = pSong;
+                    } else if (playerBindMgr != null && playerBindMgr.isBound()) {
+                        song = playerBindMgr.returnCurrentSong();
+                    }
+                    if (song != currentlyDisplayedSong) {
+                        if (song == null) {
+                            resetAlbumCover(getView());
+                            resetSongtitle();
+                        } else {
+                            updateAlbumCover(song);
+                            updateSongtitle(song);
+                        }
+                    }
+                    updateProgressBar(song);
+                    currentlyDisplayedSong = song;
+                    timestampLastCheckOnDisplay = System.currentTimeMillis();
+                }
+            }
+        });
+    }
+
+    private void updateProgressBar(Song song) {
         if(progressBar!=null) {
-            progressBar.setMax(pbm.returnCurrentSongDuration());
+            if (song == null) {
+                progressBar.setProgress(0);
+            } else {
+                if (playerBindMgr != null && playerBindMgr.isBound()) {
+                    progressBar.setMax(playerBindMgr.returnCurrentSongDuration());
+                    progressBar.setProgress(playerBindMgr.returnCurrentPosition());
+                }
+            }
+        }
+    }
+
+    private void updateAlbumCover(Song song) {
+        boolean success = false;
+        View view = getView();
+        if(view!=null) {
+
+            Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                    new String[] {MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                    MediaStore.Audio.Albums._ID+ "=?",
+                    new String[] {song.getAlbumID()},
+                    null);
+
+            if (cursor!=null && cursor.moveToFirst()) {
+                String albumPath = null;
+                while(true) {
+                    //set current album art
+                    albumPath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+                    if (albumPath == null) {
+                        if(cursor.moveToNext()) {
+                            continue;
+                        }else {
+                            break;
+                        }
+                    }else {
+                        break;
+                    }
+                }
+                cursor.close();
+                if(albumPath != null){
+                    File imgFile = new  File(albumPath);
+
+                    if(imgFile.exists()){
+                        Bitmap myBitmap = BitmapFactory.decodeFile(albumPath);
+                        ImageView myImage = (ImageView) view.findViewById(R.id.albumArt);
+                        myImage.setImageBitmap(myBitmap);
+                        success = true;
+
+                        TextView noAlbumCover = (TextView) view.findViewById(R.id.noAlbumCover);
+                        noAlbumCover.setText("");
+
+                    }
+                } else {
+
+                    //sets No Cover found Message
+                    TextView noAlbumCover = (TextView) view.findViewById(R.id.noAlbumCover);
+                    noAlbumCover.setGravity(Gravity.CENTER);
+                    noAlbumCover.setText(Html.fromHtml("<small><i>" + "No Album Cover Found" + "</i></small>"));
+
+                }
+
+            }
+            if(!success) {
+                resetAlbumCover(view);
+            }
+        }
+    }
+
+    private void updateSongtitle(Song song) {
+        View view = getView();
+        if (view != null) {
+            TextView editText = (TextView) view.findViewById(R.id.Songtitle);
+            editText.setText(song.getTitle(), TextView.BufferType.NORMAL);
+            editText.setGravity(Gravity.CENTER);
+        }
+    }
+
+    private void resetSongtitle() {
+        View view = getView();
+        if (view != null) {
+            TextView editText = (TextView) view.findViewById(R.id.Songtitle);
+            editText.setText("", TextView.BufferType.NORMAL);
+            editText.setGravity(Gravity.CENTER);
+        }
+    }
+
+    private void periodicCheckOfDisplayedInformation() {
+        if(shown) {
+            new android.os.Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if(System.currentTimeMillis() - timestampLastCheckOnDisplay > 333) {
+                        updateDisplayedInformation(null);
+                    }
+                    periodicCheckOfDisplayedInformation();
+                }
+            }, 333);
         }
     }
 
     @Override
+    public void playerBindManagerFinishedBinding(PlayerBindManager pbm) {
+        updateDisplayedInformation(null);
+    }
+
+    @Override
     public void newSongStartsPlaying(final Song song) {
-        new android.os.Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                boolean success = false;
-                if(song!=null) {
-                    View view = getView();
-                    if(view!=null) {
-                        EditText editText = (EditText) view.findViewById(R.id.Songtitle);
-                        editText.setText(song.getTitle(), TextView.BufferType.NORMAL);
-                        editText.setGravity(Gravity.CENTER);
-
-                        Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                                new String[] {MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
-                                MediaStore.Audio.Albums._ID+ "=?",
-                                new String[] {song.getAlbumID()},
-                                null);
-
-                        if (cursor!=null && cursor.moveToFirst()) {
-                            String albumPath = null;
-                            while(true) {
-                                //set current album art
-                                albumPath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
-                                if (albumPath == null) {
-                                    if(cursor.moveToNext()) {
-                                        continue;
-                                    }else {
-                                        break;
-                                    }
-                                }else {
-                                    break;
-                                }
-                            }
-                            cursor.close();
-                            if(albumPath != null){
-                                File imgFile = new  File(albumPath);
-
-                                if(imgFile.exists()){
-                                    Bitmap myBitmap = BitmapFactory.decodeFile(albumPath);
-                                    ImageView myImage = (ImageView) view.findViewById(R.id.albumArt);
-                                    myImage.setImageBitmap(myBitmap);
-                                    success = true;
-
-                                    EditText noAlbumCover = (EditText) view.findViewById(R.id.noAlbumCover);
-                                    noAlbumCover.setText("");
-
-                                }
-                            } else {
-
-                                //sets No Cover found Message
-                                EditText editText1 = (EditText) view.findViewById(R.id.noAlbumCover);
-                                editText1.setGravity(Gravity.CENTER);
-                                editText1.setText(Html.fromHtml("<small><i>" + "No Album Cover Found" + "</i></small>"));
-                                //editText1.setText("No Album Cover Found");
-
-
-
-                            }
-
-                        }
-                        if(!success) {
-                            resetAlbumCover(view);
-                        }
-                    }
-                }
-
-            }
-        });
+        updateDisplayedInformation(song);
     }
 
     @Override
@@ -379,23 +449,11 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
 
     @Override
     public void playbackStopped() {
-        new android.os.Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                View view = getView();
-                if(view != null) {
-                    resetAlbumCover(view);
-                    EditText editText = (EditText) view.findViewById(R.id.Songtitle);
-                    editText.setText("", TextView.BufferType.NORMAL);
-                    progressBar = (ProgressBar) view.findViewById(R.id.progressBarSong);
-                    progressBar.setProgress(0);
-                }
-            }
-        });
+        updateDisplayedInformation(null);
     }
 
     @Override
-    public void volumeChanged(int newVolume) {
+    public void volumeChanged(float newVolume) {
         //TODO something useful!
     }
 }

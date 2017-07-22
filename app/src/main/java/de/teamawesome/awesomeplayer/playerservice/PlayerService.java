@@ -216,6 +216,10 @@ public class PlayerService extends Service {
             return PlayerService.this.returnMediaPlayerManager().returnVolume();
         }
 
+        Song returnCurrentSong() {
+            return PlayerService.this.returnMediaPlayerManager().getCurrentSong();
+        }
+
         void addPlaybackListener(IPlaybackListener playbackListener) {
             PlayerService.this.returnMediaPlayerManager().addPlaybackListener(playbackListener);
         }

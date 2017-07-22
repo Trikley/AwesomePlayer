@@ -130,6 +130,15 @@ public class PlayerBindManager implements ServiceConnection{
         return playerBind.returnVolumeScale();
     }
 
+    public Song returnCurrentSong() {
+        disposeCheck();
+        if(!isBound()) {
+            throw new IllegalStateException("PlayerBindManager must have finished Binding for" +
+                    "this method to be called!");
+        }
+        return playerBind.returnCurrentSong();
+    }
+
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         playerBind = (PlayerService.PlayerBind) service;

@@ -151,12 +151,11 @@
         android:layout_marginRight="8dp"
         android:layout_marginLeft="8dp" />
 
-    <EditText
+    <TextView
         android:id="@+id/noAlbumCover"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
+        android:textSize="12sp"
         android:visibility="visible"
         android:background="@android:color/transparent"
         app:layout_constraintTop_toBottomOf="@+id/Songtitle"
@@ -166,12 +165,11 @@
         android:layout_marginRight="8dp"
         android:layout_marginLeft="8dp" />
 
-    <EditText
+    <TextView
         android:id="@+id/Songtitle"
         android:layout_width="368dp"
         android:layout_height="45dp"
-        android:ems="10"
-        android:inputType="textPersonName"
+        android:textSize="18sp"
         android:text="Songtitle"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="4dp"

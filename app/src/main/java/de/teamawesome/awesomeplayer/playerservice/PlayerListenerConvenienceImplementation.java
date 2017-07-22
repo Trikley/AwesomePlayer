@@ -30,7 +30,7 @@ public abstract class PlayerListenerConvenienceImplementation implements IPlayba
     }
 
     @Override
-    public void volumeChanged(int newVolume) {
+    public void volumeChanged(float newVolume) {
 
     }
 }

@@ -1,5 +1,6 @@
 package de.teamawesome.awesomeplayer.playerservice;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -15,6 +16,7 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
 
     private long timestampLastAction;
     private static long idletimeTillQueueCheck = 500;
+    private static long idletimeTillDestroyService = 5000;
 
     private PlaybackQueueManager playManager;
     private PlayerService playerService;
@@ -194,12 +196,15 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
                         }
                         mediaPlayer.setVolume(adjustedScaler, adjustedScaler);
                         volumeScale = scaler;
+                        for(IPlaybackListener playbackListener : playbackListeners) {
+                            playbackListener.volumeChanged(volumeScale);
+                        }
                     }
                 }
             });
         }
     }
-
+  
     float returnVolume() {
         return volumeScale;
     }
@@ -300,6 +305,10 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
                     if (!(mediaPlayer.isPlaying() || paused)) {
                         if (playManager.returnQueueLength() > 0) {
                             finishSong(false);
+                        }else if(!playerService.isBound() && System.currentTimeMillis()-timestampLastAction>idletimeTillDestroyService) {
+                            Intent playerServiceIntent = new Intent(playerService.getApplication(), PlayerService.class);
+                            playerService.getApplication().stopService(playerServiceIntent);
+                            return;
                         }
                     }
                 }
