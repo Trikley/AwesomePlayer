@@ -19,6 +19,7 @@ import android.widget.ListView;
 
 import de.teamawesome.awesomeplayer.R;
 import de.teamawesome.awesomeplayer.model.Song;
+import de.teamawesome.awesomeplayer.playerservice.PlayerBindManager;
 
 import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.*;
 
@@ -53,7 +54,11 @@ public class PlaylistsListFragment extends CursorListFragment {
         Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Playlists.Members.getContentUri("external", itemID), null, null, null, null);
         Song[] songsFromPlaylist = Song.extractSongsFromCursor(cursor);
         cursor.close();
-
+        PlayerBindManager manager = new PlayerBindManager(getActivity().getApplication());
+        manager.clearPlayQueue();
+        manager.stop();
+        manager.playAllSongsWhenReady(songsFromPlaylist);
+        manager.dispose();
         // Returns false to enable correct animation.
         return false;
     }
