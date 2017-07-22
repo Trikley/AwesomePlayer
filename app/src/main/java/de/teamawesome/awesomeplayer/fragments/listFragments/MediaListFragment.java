@@ -23,6 +23,9 @@ public class MediaListFragment extends CursorListFragment {
     protected boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         // The flung item's position in the list ( 0 based ).
         int listPosition= getListView().pointToPosition((int) e1.getX(), (int) e1.getY());
+
+        if(listPosition == -1) return false;
+
         // The flung item's id which can be used to querry for data from the MediaStore.
         long itemID = getListView().getItemIdAtPosition( listPosition );
 
@@ -43,6 +46,9 @@ public class MediaListFragment extends CursorListFragment {
         Bundle arguments = ListBundles.MEDIA_BUNDLE.get();
 
         int listPosition= getListView().pointToPosition((int) e.getX(), (int) e.getY());
+
+        if (currentSongs.length == 0 || listPosition == -1) return false;
+
         Song[] selectedSongs = Arrays.copyOfRange(currentSongs, listPosition, currentSongs.length);
         PlayerBindManager manager = new PlayerBindManager(getActivity().getApplication());
         manager.stop();

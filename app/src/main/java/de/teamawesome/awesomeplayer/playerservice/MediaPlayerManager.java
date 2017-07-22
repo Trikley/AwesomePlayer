@@ -204,7 +204,7 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
             });
         }
     }
-
+  
     float returnVolume() {
         return volumeScale;
     }

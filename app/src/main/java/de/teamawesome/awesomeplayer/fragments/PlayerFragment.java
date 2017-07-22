@@ -309,7 +309,6 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
                     } else if (playerBindMgr != null && playerBindMgr.isBound()) {
                         song = playerBindMgr.returnCurrentSong();
                     }
-
                     if (song != currentlyDisplayedSong) {
                         if (song == null) {
                             resetAlbumCover(getView());

@@ -19,6 +19,7 @@ import android.widget.ListView;
 
 import de.teamawesome.awesomeplayer.R;
 import de.teamawesome.awesomeplayer.model.Song;
+import de.teamawesome.awesomeplayer.playerservice.PlayerBindManager;
 
 import static de.teamawesome.awesomeplayer.fragments.listFragments.ListUtils.*;
 
@@ -44,13 +45,20 @@ public class PlaylistsListFragment extends CursorListFragment {
     protected boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         // The tapped item's position in the list ( 0 based ).
         int listPosition= getListView().pointToPosition((int) e1.getX(), (int) e2.getY());
+
+        if(listPosition == -1) return false;
+
         // The tapped item's id which can be used to querry for data from the MediaStore.
         long itemID = getListView().getItemIdAtPosition( listPosition );
         // Cursor loads all Titles from flung playlist
         Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Playlists.Members.getContentUri("external", itemID), null, null, null, null);
         Song[] songsFromPlaylist = Song.extractSongsFromCursor(cursor);
         cursor.close();
-
+        PlayerBindManager manager = new PlayerBindManager(getActivity().getApplication());
+        manager.clearPlayQueue();
+        manager.stop();
+        manager.playAllSongsWhenReady(songsFromPlaylist);
+        manager.dispose();
         // Returns false to enable correct animation.
         return false;
     }
@@ -65,6 +73,9 @@ public class PlaylistsListFragment extends CursorListFragment {
 
         // The tapped item's position in the list ( 0 based ).
         int listPosition= getListView().pointToPosition((int) e.getX(), (int) e.getY());
+
+        if(listPosition == -1) return false;
+
         // The tapped item's id which can be used to querry for data from the MediaStore.
         long itemID = getListView().getItemIdAtPosition( listPosition );
 

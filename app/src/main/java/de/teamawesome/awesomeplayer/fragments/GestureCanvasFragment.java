@@ -19,17 +19,32 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import de.teamawesome.awesomeplayer.R;
+import de.teamawesome.awesomeplayer.playerservice.PlayerBindManager;
 
 /**
  * This {@link android.app.Fragment} represents the Gesture interface from Screen VI.
  */
 public class GestureCanvasFragment extends Fragment {
     private FragmentListener fragmentListener;
+    PlayerBindManager playerBindManager;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onResume() {
+        super.onResume();
 
+        if (playerBindManager == null) {
+            playerBindManager = new PlayerBindManager(getActivity().getApplication());
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (playerBindManager != null) {
+            playerBindManager.dispose();
+            playerBindManager = null;
+        }
     }
 
     @Override
@@ -78,6 +93,7 @@ public class GestureCanvasFragment extends Fragment {
         private final String CIRCLE_COUNTERCLOCKWISE = "CIRCLE_COUNTERCLOCKWISE";
         private final String Z_GESTURE = "Z_GESTURE";
 
+        private boolean togglePauseResume = true;
         private GestureLibrary gestureLib;
 
         TouchProcessor(){
@@ -97,6 +113,8 @@ public class GestureCanvasFragment extends Fragment {
 
         @Override
         public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
+            if(playerBindManager == null) return;
+
             // Recognize custom gestures
             ArrayList<Prediction> predictions = gestureLib.recognize(gesture);
 
@@ -109,23 +127,23 @@ public class GestureCanvasFragment extends Fragment {
                 switch (maxScorePrediction.name){
                     case SWIPE_LEFT:
                         Log.d("GestureCanvas", "Gesture recognized: '" + SWIPE_LEFT + "'");
-                        // Previous Song
+                        playerBindManager.previous();
                         break;
                     case SWIPE_RIGHT:
                         Log.d("GestureCanvas", "Gesture recognized: '" + SWIPE_RIGHT + "'");
-                        // Next Song
+                        playerBindManager.next();
                         break;
                     case CIRCLE_CLOCKWISE:
                         Log.d("GestureCanvas", "Gesture recognized: '" + CIRCLE_CLOCKWISE + "'");
-                        // Forwards
+                        playerBindManager.jump10SecondsForward();
                         break;
                     case CIRCLE_COUNTERCLOCKWISE:
                         Log.d("GestureCanvas", "Gesture recognized: '" + CIRCLE_COUNTERCLOCKWISE + "'");
-                        // Backwards
+                        playerBindManager.jump10SecondsBackward();
                         break;
                     case Z_GESTURE:
                         Log.d("GestureCanvas", "Gesture recognized: '" + Z_GESTURE + "'");
-                        // Toggle Shuffle
+                        playerBindManager.shufflePlayQueue();
                         break;
                     default: Log.e("GestureCanvas", "Gesture name '" + maxScorePrediction.name + "' not specified!");
                 }
@@ -136,7 +154,16 @@ public class GestureCanvasFragment extends Fragment {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             Log.d("GestureCanvas", "SingleTap");
-            // Pause playback
+
+            if (playerBindManager == null) return super.onSingleTapConfirmed(e);
+
+            if (togglePauseResume) {
+                playerBindManager.pause();
+            } else {
+                playerBindManager.resume();
+            }
+            togglePauseResume = !togglePauseResume;
+
             return super.onSingleTapConfirmed(e);
         }
 
@@ -145,12 +172,12 @@ public class GestureCanvasFragment extends Fragment {
 
             if(velocityY > 0) {
                 Log.d("GestureCanvas", "Fling down");
-                // Fling down
-                // Volume down
+                playerBindManager.decreaseVolumeBySomethingLikeOneTenth();
+                // TODO VOLUME
+
             } else {
                 Log.d("GestureCanvas", "Fling up");
-                // Fling up
-                // Volume up
+                playerBindManager.increaseVolumeBySomethingLikeOneTenth();
             }
 
             return super.onFling(e1, e2, velocityX, velocityY);
