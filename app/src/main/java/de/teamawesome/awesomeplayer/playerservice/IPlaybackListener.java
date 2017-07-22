@@ -14,6 +14,6 @@ public interface IPlaybackListener {
 
     void playbackStopped();
 
-    void volumeChanged(int newVolume);
+    void volumeChanged(float newVolume);
 
 }

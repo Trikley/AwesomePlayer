@@ -194,6 +194,9 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
                         }
                         mediaPlayer.setVolume(adjustedScaler, adjustedScaler);
                         volumeScale = scaler;
+                        for(IPlaybackListener playbackListener : playbackListeners) {
+                            playbackListener.volumeChanged(volumeScale);
+                        }
                     }
                 }
             });
