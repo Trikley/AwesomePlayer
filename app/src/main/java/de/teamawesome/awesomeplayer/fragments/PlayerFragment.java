@@ -261,6 +261,9 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
         if(view!=null) {
             ImageView myImage = (ImageView) view.findViewById(R.id.albumArt);
             myImage.setImageDrawable(getActivity().getResources().getDrawable( R.drawable.default_album_cover));
+            EditText noAlbumCover =  (EditText) view.findViewById(R.id.noAlbumCover);
+            noAlbumCover.setText("No Album Cover available!", TextView.BufferType.NORMAL);
+            noAlbumCover.setGravity(Gravity.CENTER);
         }
     }
 
@@ -281,7 +284,7 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
                     View view = getView();
                     if(view!=null) {
                         EditText editText = (EditText) view.findViewById(R.id.Songtitle);
-                        editText.setText(song.getTitle(), TextView.BufferType.EDITABLE);
+                        editText.setText(song.getTitle(), TextView.BufferType.NORMAL);
                         editText.setGravity(Gravity.CENTER);
 
                         Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
@@ -315,8 +318,8 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
                                     myImage.setImageBitmap(myBitmap);
                                     success = true;
 
-                                    EditText editText1 = (EditText) view.findViewById(R.id.noAlbumCover);
-                                    editText1.setText("");
+                                    EditText noAlbumCover = (EditText) view.findViewById(R.id.noAlbumCover);
+                                    noAlbumCover.setText("");
 
                                 }
                             } else {
