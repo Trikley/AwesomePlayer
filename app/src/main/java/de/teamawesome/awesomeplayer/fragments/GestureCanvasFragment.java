@@ -172,14 +172,12 @@ public class GestureCanvasFragment extends Fragment {
 
             if(velocityY > 0) {
                 Log.d("GestureCanvas", "Fling down");
-                // Fling down
+                playerBindManager.decreaseVolumeBySomethingLikeOneTenth();
                 // TODO VOLUME
 
             } else {
                 Log.d("GestureCanvas", "Fling up");
-                // Fling up
-                // Volume up
-                // TODO VOLUME
+                playerBindManager.increaseVolumeBySomethingLikeOneTenth();
             }
 
             return super.onFling(e1, e2, velocityX, velocityY);
