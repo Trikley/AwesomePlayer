@@ -121,6 +121,15 @@ public class PlayerBindManager implements ServiceConnection{
         return playerBind.returnRepeatMode();
     }
 
+    public float returnVolumeScale() {
+        disposeCheck();
+        if(!isBound()) {
+            throw new IllegalStateException("PlayerBindManager must have finished Binding for" +
+                    "this method to be called!");
+        }
+        return playerBind.returnVolumeScale();
+    }
+
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         playerBind = (PlayerService.PlayerBind) service;
@@ -298,6 +307,34 @@ public class PlayerBindManager implements ServiceConnection{
         }
     }
 
+    public void increaseVolumeBySomethingLikeOneTenth() throws IllegalStateException {
+        disposeCheck();
+        if(!isBound()) {
+            throw new IllegalStateException("PlayerBindManager must have finished Binding for" +
+                    "this method to be called!");
+        }
+        float currentVolume = this.returnVolumeScale();
+        if(currentVolume<=0.9f) {
+            this.setVolumeScale(currentVolume+0.1f);
+        }else {
+            this.setVolumeScale(1f);
+        }
+    }
+
+    public void decreaseVolumeBySomethingLikeOneTenth() throws IllegalStateException {
+        disposeCheck();
+        if(!isBound()) {
+            throw new IllegalStateException("PlayerBindManager must have finished Binding for" +
+                    "this method to be called!");
+        }
+        float currentVolume = this.returnVolumeScale();
+        if(currentVolume>=0.1f) {
+            this.setVolumeScale(currentVolume-0.1f);
+        }else {
+            this.setVolumeScale(0f);
+        }
+    }
+
     public void setLoopingMode(final boolean newMode) throws IllegalStateException{
         disposeCheck();
         if (isBound()) {
@@ -337,6 +374,19 @@ public class PlayerBindManager implements ServiceConnection{
                     "the maximum length of the currently playing Song");
         }
         playerBind.setPlaybackPosition(millis);
+    }
+
+    public void setVolumeScale(float scale) throws IllegalStateException{
+        disposeCheck();
+        if(!isBound()) {
+            throw new IllegalStateException("PlayerBindManager must have finished Binding for" +
+                    "this method to be called!");
+        }
+        if(scale<0f || scale>1f) {
+            throw new IllegalArgumentException("Parameter " + scale + " must be between 0 and" +
+                    "1!");
+        }
+        playerBind.setVolumeScale(scale);
     }
 
     public void clearPlayQueue()throws IllegalStateException {

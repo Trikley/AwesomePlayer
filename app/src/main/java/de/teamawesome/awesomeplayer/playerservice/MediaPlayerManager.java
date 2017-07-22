@@ -19,7 +19,6 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
     private PlaybackQueueManager playManager;
     private PlayerService playerService;
 
-    private boolean paused;
     private Handler handler;
     private boolean prepared;
     private boolean finishingUp;
@@ -28,6 +27,9 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
     private MediaPlayer mediaPlayer;
 
     private Song currentSong;
+    private boolean paused;
+    private float volumeScale;
+    private boolean looping;
 
     private boolean quit;
 
@@ -40,9 +42,13 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
         quit = false;
         finishingUp = false;
 
+        volumeScale = 0.5f;
+        looping = false;
+
         playbackListeners = new LinkedBlockingQueue<>();
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setOnCompletionListener(this);
+        resetMediaPlayer();
 
         timestampLastAction = 0;
     }
@@ -67,7 +73,7 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
         Toast.makeText(playerService.getApplicationContext(), "Playing: " + song.getTitle(), Toast.LENGTH_SHORT).show();
         try {
             timestampLastAction = System.currentTimeMillis();
-            mediaPlayer.reset();
+            resetMediaPlayer();
             mediaPlayer.setDataSource(song.getPath());
             mediaPlayer.prepare();
             mediaPlayer.start();
@@ -89,9 +95,9 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
         handler.post(new Runnable() {
             @Override
             public void run() {
-                timestampLastAction = System.currentTimeMillis();
-                mediaPlayer.reset();
+                resetMediaPlayer();
                 finishSong(false);
+                timestampLastAction = System.currentTimeMillis();
             }
         });
     }
@@ -101,9 +107,9 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
         handler.post(new Runnable() {
             @Override
             public void run() {
-                timestampLastAction = System.currentTimeMillis();
-                mediaPlayer.reset();
+                resetMediaPlayer();
                 finishSong(putToBackstack);
+                timestampLastAction = System.currentTimeMillis();
             }
         });
     }
@@ -113,14 +119,14 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    timestampLastAction = System.currentTimeMillis();
                     mediaPlayer.pause();
+                    timestampLastAction = System.currentTimeMillis();
                     paused = true;
+                    for(IPlaybackListener playbackListener : playbackListeners) {
+                        playbackListener.playbackPaused();
+                    }
                 }
             });
-            for(IPlaybackListener playbackListener : playbackListeners) {
-                playbackListener.playbackPaused();
-            }
         }
     }
 
@@ -129,23 +135,27 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    timestampLastAction = System.currentTimeMillis();
                     mediaPlayer.start();
+                    timestampLastAction = System.currentTimeMillis();
                     paused = false;
+                    for(IPlaybackListener playbackListener : playbackListeners) {
+                        playbackListener.playbackResumed();
+                    }
                 }
             });
-            for(IPlaybackListener playbackListener : playbackListeners) {
-                playbackListener.playbackResumed();
-            }
         }
     }
 
-    void setLoopingMode(boolean newMode) {
+    void setLoopingMode(final boolean newMode) {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                timestampLastAction = System.currentTimeMillis();
-                mediaPlayer.setLooping(true);
+                if(mediaPlayer.isPlaying() || paused) {
+                    mediaPlayer.setLooping(true);
+                    looping = newMode;
+                    timestampLastAction = System.currentTimeMillis();
+                }
+
             }
         });
     }
@@ -155,11 +165,43 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    timestampLastAction = System.currentTimeMillis();
-                    mediaPlayer.seekTo(millis);
+                    if(mediaPlayer.isPlaying() || paused) {
+                        mediaPlayer.seekTo(millis);
+                        timestampLastAction = System.currentTimeMillis();
+                    }
                 }
             });
         }
+    }
+
+    void setVolume(final float scaler) {
+        if(scaler>=0f && scaler<=1f) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if(mediaPlayer.isPlaying() || paused) {
+                        float adjustedScaler;
+                        if(scaler == 0f) {
+                            adjustedScaler = 0f;
+                        } else {
+                            double scalerPowered = Math.pow((double) scaler, 0.75d);
+                            adjustedScaler = (float) Math.pow(10d, (1d - (1d / scalerPowered)));
+                            if (adjustedScaler < 0f) {
+                                adjustedScaler = 0f;
+                            } else if (adjustedScaler > 1f) {
+                                adjustedScaler = 1f;
+                            }
+                        }
+                        mediaPlayer.setVolume(adjustedScaler, adjustedScaler);
+                        volumeScale = scaler;
+                    }
+                }
+            });
+        }
+    }
+
+    float returnVolume() {
+        return volumeScale;
     }
 
     int returnCurrentPosition() {
@@ -178,7 +220,7 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
     }
 
     boolean returnRepeatMode() {
-        return mediaPlayer.isLooping();
+        return looping;
     }
 
     void addPlaybackListener(IPlaybackListener playbackListener) {
@@ -222,6 +264,12 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
                 playbackListener.playbackStopped();
             }
         }
+    }
+
+    private void resetMediaPlayer() {
+        mediaPlayer.reset();
+        mediaPlayer.setVolume(volumeScale, volumeScale);
+        mediaPlayer.setLooping(looping);
     }
 
     @Override

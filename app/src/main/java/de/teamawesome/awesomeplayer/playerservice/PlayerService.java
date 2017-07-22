@@ -164,6 +164,10 @@ public class PlayerService extends Service {
             PlayerService.this.returnMediaPlayerManager().setPlaybackPosition(millis);
         }
 
+        void setVolumeScale(float scaler) {
+            PlayerService.this.returnMediaPlayerManager().setVolume(scaler);
+        }
+
         void clearPlayQueue() {
             PlayerService.this.getPlaybackQueueManager().clearQueue();
         }
@@ -206,6 +210,10 @@ public class PlayerService extends Service {
 
         boolean returnRepeatMode() {
             return PlayerService.this.returnMediaPlayerManager().returnRepeatMode();
+        }
+
+        float returnVolumeScale() {
+            return PlayerService.this.returnMediaPlayerManager().returnVolume();
         }
 
         void addPlaybackListener(IPlaybackListener playbackListener) {
