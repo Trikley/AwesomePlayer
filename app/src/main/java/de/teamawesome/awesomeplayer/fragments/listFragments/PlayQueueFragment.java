@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -13,13 +14,14 @@ import android.widget.ListView;
 
 import java.util.List;
 
+import de.teamawesome.awesomeplayer.MainMenuActivity;
 import de.teamawesome.awesomeplayer.R;
 import de.teamawesome.awesomeplayer.fragments.FragmentListener;
 import de.teamawesome.awesomeplayer.model.Song;
 import de.teamawesome.awesomeplayer.playerservice.IPlaybackListener;
 import de.teamawesome.awesomeplayer.playerservice.PlayerBindManager;
 
-public class PlayQueueFragment extends Fragment implements IPlaybackListener {
+public class PlayQueueFragment extends Fragment implements IPlaybackListener, View.OnTouchListener {
 
     private FragmentListener fListener;
 
@@ -212,4 +214,11 @@ public class PlayQueueFragment extends Fragment implements IPlaybackListener {
 
     }
 
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if(fListener instanceof MainMenuActivity) {
+            return ((MainMenuActivity) fListener).onTouchEvent(event);
+        }
+        return false;
+    }
 }
