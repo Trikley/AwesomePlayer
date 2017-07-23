@@ -152,7 +152,7 @@ public class PlayerBindManager implements ServiceConnection{
     public void onServiceConnected(ComponentName name, IBinder service) {
         playerBind = (PlayerService.PlayerBind) service;
         for(Runnable action : queuedActions) {
-            new android.os.Handler(Looper.getMainLooper()).post(action);
+            action.run();
         }
         queuedActions.clear();
         for(IPlaybackListener pbl : playbackListenersWaitingOnBind) {
