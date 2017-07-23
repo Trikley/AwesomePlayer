@@ -15,6 +15,7 @@ import de.teamawesome.awesomeplayer.fragments.PlayerFragment;
 import de.teamawesome.awesomeplayer.fragments.listFragments.AlbumsListFragment;
 import de.teamawesome.awesomeplayer.fragments.listFragments.ListBundles;
 import de.teamawesome.awesomeplayer.fragments.listFragments.MediaListFragment;
+import de.teamawesome.awesomeplayer.fragments.listFragments.PlayQueueFragment;
 import de.teamawesome.awesomeplayer.fragments.listFragments.PlaylistsListFragment;
 
 public class MainMenuActivity extends AppCompatActivity implements FragmentListener {
@@ -65,6 +66,8 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
         if(caller instanceof MediaListFragment || caller instanceof SwipeButton){
             if(findViewById(R.id.Songtitle)==null) {
                 replaceMainFragment(new PlayerFragment(), arguments);
+            }else {
+                replaceMainFragment(new PlayQueueFragment(), arguments);
             }
         }
         if(caller instanceof AlbumsListFragment){
@@ -114,7 +117,11 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
         // and add the transaction to the back stack if needed
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.MainContainer, newFragment,MAIN_FRAGMENT_TAG);
-        transaction.addToBackStack(null);
+//        if(!(newFragment instanceof PlayQueueFragment ||
+//                newFragment instanceof PlayerFragment ||
+//                newFragment instanceof GestureCanvasFragment)) {
+            transaction.addToBackStack(null);
+//        }
         // Commit transaction
         transaction.commit();
     }

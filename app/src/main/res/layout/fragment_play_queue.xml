@@ -1,0 +1,23 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <ListView
+        android:id="@+id/songlist"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_gravity="bottom"/>
+
+    <Button
+        android:id="@+id/playqueuebutton"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="PlayQueue"
+        android:layout_gravity="top|right" />
+
+    <Button
+        android:id="@+id/backstackbutton"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="BackStack"
+        android:layout_gravity="top|left" />
+
+</FrameLayout >

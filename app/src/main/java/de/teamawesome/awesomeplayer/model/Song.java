@@ -41,7 +41,7 @@ public class Song implements Parcelable{
         }
     };
 
-    private Song(){};
+    public Song(){};
 
     public Song(String id, String path, String displayName,
                 String title, String duration, String albumID,
@@ -142,6 +142,23 @@ public class Song implements Parcelable{
 
     public String getArtist() {
         return artist;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        if(artist!=null && !artist.equals("")) {
+            builder.append(artist);
+            builder.append(" - ");
+        }
+        if(title !=null && !title.equals("")) {
+            builder.append(title);
+        }else if(displayName != null && !displayName.equals("")) {
+            builder.append(displayName);
+        }else {
+            builder.append("unknown title");
+        }
+        return builder.toString();
     }
 
     //I have no idea, what this Method is supposed to do

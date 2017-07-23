@@ -284,6 +284,7 @@ public class PlayerFragment extends Fragment implements IPlaybackListener{
     }
 
     private void disposeOfPlayerBindManager() {
+        playerBindMgr.removePlaybackListener(this);
         playerBindMgr.dispose();
         playerBindMgr = null;
     }
