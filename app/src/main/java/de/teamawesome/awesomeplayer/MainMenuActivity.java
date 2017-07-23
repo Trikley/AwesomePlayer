@@ -63,7 +63,9 @@ public class MainMenuActivity extends AppCompatActivity implements FragmentListe
     @Override
     public void onFragmentInteraction(Bundle arguments, Object caller) {
         if(caller instanceof MediaListFragment || caller instanceof SwipeButton){
-            replaceMainFragment(new PlayerFragment(), arguments);
+            if(findViewById(R.id.Songtitle)==null) {
+                replaceMainFragment(new PlayerFragment(), arguments);
+            }
         }
         if(caller instanceof AlbumsListFragment){
             replaceMainFragment(new MediaListFragment(), arguments);

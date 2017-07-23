@@ -220,6 +220,10 @@ public class PlayerService extends Service {
             return PlayerService.this.returnMediaPlayerManager().getCurrentSong();
         }
 
+        boolean returnIsPaused() {
+            return PlayerService.this.returnMediaPlayerManager().returnIsPaused();
+        }
+
         void addPlaybackListener(IPlaybackListener playbackListener) {
             PlayerService.this.returnMediaPlayerManager().addPlaybackListener(playbackListener);
         }

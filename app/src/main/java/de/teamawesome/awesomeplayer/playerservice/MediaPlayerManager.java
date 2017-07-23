@@ -228,6 +228,10 @@ class MediaPlayerManager extends HandlerThread implements MediaPlayer.OnCompleti
         return looping;
     }
 
+    boolean returnIsPaused() {
+        return paused;
+    }
+
     void addPlaybackListener(IPlaybackListener playbackListener) {
         playbackListeners.add(playbackListener);
     }

@@ -156,12 +156,23 @@ public class GestureCanvasFragment extends Fragment {
 
             if (playerBindManager == null) return super.onSingleTapConfirmed(e);
 
-            if (togglePauseResume) {
-                playerBindManager.pause();
-            } else {
-                playerBindManager.resume();
+            if(playerBindManager.isBound()) {
+                if(playerBindManager.returnIsPaused()) {
+                    playerBindManager.resume();
+                    togglePauseResume = true;
+                }else {
+                    playerBindManager.pause();
+                    togglePauseResume = false;
+                }
+            }else {
+                if (togglePauseResume) {
+                    playerBindManager.pause();
+                } else {
+                    playerBindManager.resume();
+                }
+                togglePauseResume = !togglePauseResume;
             }
-            togglePauseResume = !togglePauseResume;
+
 
             return super.onSingleTapConfirmed(e);
         }

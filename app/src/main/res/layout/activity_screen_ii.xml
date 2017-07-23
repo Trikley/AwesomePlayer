@@ -153,7 +153,7 @@
 
     <TextView
         android:id="@+id/noAlbumCover"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="12sp"
         android:visibility="visible"
@@ -167,7 +167,7 @@
 
     <TextView
         android:id="@+id/Songtitle"
-        android:layout_width="368dp"
+        android:layout_width="match_parent"
         android:layout_height="45dp"
         android:textSize="18sp"
         android:text="Songtitle"
@@ -175,7 +175,5 @@
         android:layout_marginTop="4dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginRight="8dp"
-        android:layout_marginLeft="8dp"
         app:layout_constraintHorizontal_bias="0.0" />
 </android.support.constraint.ConstraintLayout>
